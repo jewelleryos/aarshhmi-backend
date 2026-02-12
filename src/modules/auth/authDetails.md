@@ -2,7 +2,7 @@
 
 ## Overview
 
-This module handles admin authentication for the Luminique platform.
+This module handles admin authentication for the Aarshhmi platform.
 
 ## Authentication Flow
 

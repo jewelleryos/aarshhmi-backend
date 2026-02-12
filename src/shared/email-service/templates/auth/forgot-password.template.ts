@@ -24,7 +24,7 @@ export const forgotPasswordTemplate = (params: ForgotPasswordTemplateParams): st
           <!-- Header -->
           <tr>
             <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid #eaeaea;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Luminique</h1>
+              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Aarshhmi</h1>
             </td>
           </tr>
 
@@ -38,7 +38,7 @@ export const forgotPasswordTemplate = (params: ForgotPasswordTemplateParams): st
               </p>
 
               <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6; color: #4a4a4a;">
-                You requested to reset your password for your Luminique admin account. Click the button below to set a new password.
+                You requested to reset your password for your Aarshhmi admin account. Click the button below to set a new password.
               </p>
 
               <!-- Button -->
@@ -77,7 +77,7 @@ export const forgotPasswordTemplate = (params: ForgotPasswordTemplateParams): st
           <tr>
             <td style="padding: 30px 40px; text-align: center; background-color: #fafafa; border-top: 1px solid #eaeaea; border-radius: 0 0 8px 8px;">
               <p style="margin: 0; font-size: 13px; color: #8a8a8a;">
-                &copy; ${new Date().getFullYear()} Luminique. All rights reserved.
+                &copy; ${new Date().getFullYear()} Aarshhmi. All rights reserved.
               </p>
               <p style="margin: 10px 0 0; font-size: 12px; color: #aaaaaa;">
                 This is an automated message. Please do not reply to this email.
