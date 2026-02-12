@@ -1,0 +1,7 @@
+# deps
+node_modules/
+
+# environment
+.env
+.env.local
+.env.production

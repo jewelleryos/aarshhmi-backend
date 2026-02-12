@@ -1,0 +1,376 @@
+{
+  "modules": {
+    "user": {
+      "id": 1,
+      "label": "User Management",
+      "permissions": {
+        "create": { "code": 101, "label": "Create User", "requires": [102], "internal": false },
+        "read": { "code": 102, "label": "View Users", "requires": [], "internal": false },
+        "update": { "code": 103, "label": "Update User", "requires": [102], "internal": false },
+        "delete": { "code": 104, "label": "Delete User", "requires": [102], "internal": false },
+        "manage_own_permissions": { "code": 105, "label": "Manage Own Permissions", "requires": [], "internal": false }
+      }
+    },
+    "dashboard": {
+      "id": 2,
+      "label": "Dashboard",
+      "permissions": {
+        "read": { "code": 201, "label": "View Dashboard", "requires": [], "internal": false }
+      }
+    },
+    "media_manager": {
+      "id": 3,
+      "label": "Media Manager",
+      "permissions": {
+        "read": { "code": 301, "label": "Access Media Manager", "requires": [], "internal": false }
+      }
+    },
+    "metal_type": {
+      "id": 4,
+      "label": "Metal Type",
+      "permissions": {
+        "create": { "code": 401, "label": "Create Metal Type", "requires": [402], "internal": false },
+        "read": { "code": 402, "label": "View Metal Types", "requires": [], "internal": false },
+        "update": { "code": 403, "label": "Update Metal Type", "requires": [402], "internal": false },
+        "delete": { "code": 404, "label": "Delete Metal Type", "requires": [402], "internal": false }
+      }
+    },
+    "metal_color": {
+      "id": 5,
+      "label": "Metal Color",
+      "permissions": {
+        "create": { "code": 501, "label": "Create Metal Color", "requires": [502], "internal": false },
+        "read": { "code": 502, "label": "View Metal Colors", "requires": [], "internal": false },
+        "update": { "code": 503, "label": "Update Metal Color", "requires": [502], "internal": false },
+        "delete": { "code": 504, "label": "Delete Metal Color", "requires": [502], "internal": false }
+      }
+    },
+    "metal_purity": {
+      "id": 6,
+      "label": "Metal Purity",
+      "permissions": {
+        "create": { "code": 601, "label": "Create Metal Purity", "requires": [602], "internal": false },
+        "read": { "code": 602, "label": "View Metal Purities", "requires": [], "internal": false },
+        "update": { "code": 603, "label": "Update Metal Purity", "requires": [602], "internal": false },
+        "delete": { "code": 604, "label": "Delete Metal Purity", "requires": [602], "internal": false }
+      }
+    },
+    "stone_shape": {
+      "id": 7,
+      "label": "Stone Shape",
+      "permissions": {
+        "create": { "code": 701, "label": "Create Stone Shape", "requires": [702], "internal": false },
+        "read": { "code": 702, "label": "View Stone Shapes", "requires": [], "internal": false },
+        "update": { "code": 703, "label": "Update Stone Shape", "requires": [702], "internal": false },
+        "delete": { "code": 704, "label": "Delete Stone Shape", "requires": [702], "internal": false }
+      }
+    },
+    "gemstone_type": {
+      "id": 8,
+      "label": "Gemstone Type",
+      "permissions": {
+        "create": { "code": 801, "label": "Create Gemstone Type", "requires": [802], "internal": false },
+        "read": { "code": 802, "label": "View Gemstone Types", "requires": [], "internal": false },
+        "update": { "code": 803, "label": "Update Gemstone Type", "requires": [802], "internal": false },
+        "delete": { "code": 804, "label": "Delete Gemstone Type", "requires": [802], "internal": false }
+      }
+    },
+    "gemstone_quality": {
+      "id": 9,
+      "label": "Gemstone Quality",
+      "permissions": {
+        "create": { "code": 901, "label": "Create Gemstone Quality", "requires": [902], "internal": false },
+        "read": { "code": 902, "label": "View Gemstone Qualities", "requires": [], "internal": false },
+        "update": { "code": 903, "label": "Update Gemstone Quality", "requires": [902], "internal": false },
+        "delete": { "code": 904, "label": "Delete Gemstone Quality", "requires": [902], "internal": false }
+      }
+    },
+    "gemstone_color": {
+      "id": 10,
+      "label": "Gemstone Color",
+      "permissions": {
+        "create": { "code": 1001, "label": "Create Gemstone Color", "requires": [1002], "internal": false },
+        "read": { "code": 1002, "label": "View Gemstone Colors", "requires": [], "internal": false },
+        "update": { "code": 1003, "label": "Update Gemstone Color", "requires": [1002], "internal": false },
+        "delete": { "code": 1004, "label": "Delete Gemstone Color", "requires": [1002], "internal": false }
+      }
+    },
+    "diamond_clarity_color": {
+      "id": 11,
+      "label": "Diamond Clarity/Color",
+      "permissions": {
+        "create": { "code": 1101, "label": "Create Diamond Clarity/Color", "requires": [1102], "internal": false },
+        "read": { "code": 1102, "label": "View Diamond Clarity/Colors", "requires": [], "internal": false },
+        "update": { "code": 1103, "label": "Update Diamond Clarity/Color", "requires": [1102], "internal": false },
+        "delete": { "code": 1104, "label": "Delete Diamond Clarity/Color", "requires": [1102], "internal": false }
+      }
+    },
+    "diamond_pricing": {
+      "id": 12,
+      "label": "Diamond Pricing",
+      "permissions": {
+        "create": { "code": 1201, "label": "Create Diamond Price", "requires": [1202], "internal": false },
+        "read": { "code": 1202, "label": "View Diamond Prices", "requires": [], "internal": false },
+        "update": { "code": 1203, "label": "Update Diamond Price", "requires": [1202], "internal": false },
+        "delete": { "code": 1204, "label": "Delete Diamond Price", "requires": [1202], "internal": false }
+      }
+    },
+    "gemstone_pricing": {
+      "id": 13,
+      "label": "Gemstone Pricing",
+      "permissions": {
+        "create": { "code": 1301, "label": "Create Gemstone Price", "requires": [1302], "internal": false },
+        "read": { "code": 1302, "label": "View Gemstone Prices", "requires": [], "internal": false },
+        "update": { "code": 1303, "label": "Update Gemstone Price", "requires": [1302], "internal": false },
+        "delete": { "code": 1304, "label": "Delete Gemstone Price", "requires": [1302], "internal": false }
+      }
+    },
+    "making_charge": {
+      "id": 14,
+      "label": "Making Charge",
+      "permissions": {
+        "create": { "code": 1401, "label": "Create Making Charge", "requires": [1402], "internal": false },
+        "read": { "code": 1402, "label": "View Making Charges", "requires": [], "internal": false },
+        "update": { "code": 1403, "label": "Update Making Charge", "requires": [1402], "internal": false },
+        "delete": { "code": 1404, "label": "Delete Making Charge", "requires": [1402], "internal": false }
+      }
+    },
+    "other_charge": {
+      "id": 15,
+      "label": "Other Charge",
+      "permissions": {
+        "create": { "code": 1501, "label": "Create Other Charge", "requires": [1502], "internal": false },
+        "read": { "code": 1502, "label": "View Other Charges", "requires": [], "internal": false },
+        "update": { "code": 1503, "label": "Update Other Charge", "requires": [1502], "internal": false },
+        "delete": { "code": 1504, "label": "Delete Other Charge", "requires": [1502], "internal": false }
+      }
+    },
+    "pearl_type": {
+      "id": 16,
+      "label": "Pearl Type",
+      "permissions": {
+        "create": { "code": 1601, "label": "Create Pearl Type", "requires": [1602], "internal": false },
+        "read": { "code": 1602, "label": "View Pearl Types", "requires": [], "internal": false },
+        "update": { "code": 1603, "label": "Update Pearl Type", "requires": [1602], "internal": false },
+        "delete": { "code": 1604, "label": "Delete Pearl Type", "requires": [1602], "internal": false }
+      }
+    },
+    "pearl_quality": {
+      "id": 17,
+      "label": "Pearl Quality",
+      "permissions": {
+        "create": { "code": 1701, "label": "Create Pearl Quality", "requires": [1702], "internal": false },
+        "read": { "code": 1702, "label": "View Pearl Qualities", "requires": [], "internal": false },
+        "update": { "code": 1703, "label": "Update Pearl Quality", "requires": [1702], "internal": false },
+        "delete": { "code": 1704, "label": "Delete Pearl Quality", "requires": [1702], "internal": false }
+      }
+    },
+    "mrp_markup": {
+      "id": 18,
+      "label": "MRP Markup",
+      "permissions": {
+        "read": { "code": 1801, "label": "View MRP Markup", "requires": [], "internal": false },
+        "update": { "code": 1802, "label": "Update MRP Markup", "requires": [1801], "internal": false }
+      }
+    },
+    "tag_group": {
+      "id": 19,
+      "label": "Tag Group",
+      "permissions": {
+        "create": { "code": 1901, "label": "Create Tag Group", "requires": [1902], "internal": false },
+        "read": { "code": 1902, "label": "View Tag Groups", "requires": [], "internal": false },
+        "update": { "code": 1903, "label": "Update Tag Group", "requires": [1902], "internal": false },
+        "delete": { "code": 1904, "label": "Delete Tag Group", "requires": [1902], "internal": false }
+      }
+    },
+    "tag": {
+      "id": 20,
+      "label": "Tag",
+      "permissions": {
+        "create": { "code": 2001, "label": "Create Tag", "requires": [2002], "internal": false },
+        "read": { "code": 2002, "label": "View Tags", "requires": [], "internal": false },
+        "update": { "code": 2003, "label": "Update Tag", "requires": [2002], "internal": false },
+        "delete": { "code": 2004, "label": "Delete Tag", "requires": [2002], "internal": false }
+      }
+    },
+    "category": {
+      "id": 21,
+      "label": "Category",
+      "permissions": {
+        "create": { "code": 2101, "label": "Create Category", "requires": [2102], "internal": false },
+        "read": { "code": 2102, "label": "View Categories", "requires": [], "internal": false },
+        "update": { "code": 2103, "label": "Update Category", "requires": [2102], "internal": false },
+        "delete": { "code": 2104, "label": "Delete Category", "requires": [2102], "internal": false }
+      }
+    },
+    "badge": {
+      "id": 22,
+      "label": "Badge",
+      "permissions": {
+        "create": { "code": 2201, "label": "Create Badge", "requires": [2202], "internal": false },
+        "read": { "code": 2202, "label": "View Badges", "requires": [], "internal": false },
+        "update": { "code": 2203, "label": "Update Badge", "requires": [2202], "internal": false },
+        "delete": { "code": 2204, "label": "Delete Badge", "requires": [2202], "internal": false }
+      }
+    },
+    "size_chart_group": {
+      "id": 23,
+      "label": "Size Chart Group",
+      "permissions": {
+        "create": { "code": 2301, "label": "Create Size Chart Group", "requires": [2302], "internal": false },
+        "read": { "code": 2302, "label": "View Size Chart Groups", "requires": [], "internal": false },
+        "update": { "code": 2303, "label": "Update Size Chart Group", "requires": [2302], "internal": false },
+        "delete": { "code": 2304, "label": "Delete Size Chart Group", "requires": [2302], "internal": false }
+      }
+    },
+    "size_chart_value": {
+      "id": 24,
+      "label": "Size Chart Value",
+      "permissions": {
+        "create": { "code": 2401, "label": "Create Size Chart Value", "requires": [2402], "internal": false },
+        "read": { "code": 2402, "label": "View Size Chart Values", "requires": [], "internal": false },
+        "update": { "code": 2403, "label": "Update Size Chart Value", "requires": [2402], "internal": false },
+        "delete": { "code": 2404, "label": "Delete Size Chart Value", "requires": [2402], "internal": false }
+      }
+    },
+    "product": {
+      "id": 25,
+      "label": "Product",
+      "permissions": {
+        "create": { "code": 2501, "label": "Create Product", "requires": [2502], "internal": false },
+        "read": { "code": 2502, "label": "View Products", "requires": [], "internal": false },
+        "update": { "code": 2503, "label": "Update Product", "requires": [2502], "internal": false },
+        "delete": { "code": 2504, "label": "Delete Product", "requires": [2502], "internal": false },
+        "update_status": { "code": 2505, "label": "Update Product Status", "requires": [2502], "internal": false }
+      }
+    },
+    "pricing_rule": {
+      "id": 26,
+      "label": "Pricing Rule",
+      "permissions": {
+        "create": { "code": 2601, "label": "Create Pricing Rule", "requires": [2602], "internal": false },
+        "read": { "code": 2602, "label": "View Pricing Rules", "requires": [], "internal": false },
+        "update": { "code": 2603, "label": "Update Pricing Rule", "requires": [2602], "internal": false },
+        "delete": { "code": 2604, "label": "Delete Pricing Rule", "requires": [2602], "internal": false }
+      }
+    },
+    "storefront_filter": {
+      "id": 27,
+      "label": "Storefront Filter",
+      "permissions": {
+        "read": { "code": 2701, "label": "View Storefront Filters", "requires": [], "internal": false },
+        "update": { "code": 2702, "label": "Update Storefront Filter", "requires": [2701], "internal": false }
+      }
+    },
+    "cms": {
+      "id": 28,
+      "label": "CMS",
+      "permissions": {
+        "manage": { "code": 2801, "label": "Manage CMS", "requires": [], "internal": false }
+      }
+    }
+  },
+  "byCode": {
+    "101": { "module": "user", "action": "create", "label": "Create User", "internal": false },
+    "102": { "module": "user", "action": "read", "label": "View Users", "internal": false },
+    "103": { "module": "user", "action": "update", "label": "Update User", "internal": false },
+    "104": { "module": "user", "action": "delete", "label": "Delete User", "internal": false },
+    "105": { "module": "user", "action": "manage_own_permissions", "label": "Manage Own Permissions", "internal": false },
+    "201": { "module": "dashboard", "action": "read", "label": "View Dashboard", "internal": false },
+    "301": { "module": "media_manager", "action": "read", "label": "Access Media Manager", "internal": false },
+    "401": { "module": "metal_type", "action": "create", "label": "Create Metal Type", "internal": false },
+    "402": { "module": "metal_type", "action": "read", "label": "View Metal Types", "internal": false },
+    "403": { "module": "metal_type", "action": "update", "label": "Update Metal Type", "internal": false },
+    "404": { "module": "metal_type", "action": "delete", "label": "Delete Metal Type", "internal": false },
+    "501": { "module": "metal_color", "action": "create", "label": "Create Metal Color", "internal": false },
+    "502": { "module": "metal_color", "action": "read", "label": "View Metal Colors", "internal": false },
+    "503": { "module": "metal_color", "action": "update", "label": "Update Metal Color", "internal": false },
+    "504": { "module": "metal_color", "action": "delete", "label": "Delete Metal Color", "internal": false },
+    "601": { "module": "metal_purity", "action": "create", "label": "Create Metal Purity", "internal": false },
+    "602": { "module": "metal_purity", "action": "read", "label": "View Metal Purities", "internal": false },
+    "603": { "module": "metal_purity", "action": "update", "label": "Update Metal Purity", "internal": false },
+    "604": { "module": "metal_purity", "action": "delete", "label": "Delete Metal Purity", "internal": false },
+    "701": { "module": "stone_shape", "action": "create", "label": "Create Stone Shape", "internal": false },
+    "702": { "module": "stone_shape", "action": "read", "label": "View Stone Shapes", "internal": false },
+    "703": { "module": "stone_shape", "action": "update", "label": "Update Stone Shape", "internal": false },
+    "704": { "module": "stone_shape", "action": "delete", "label": "Delete Stone Shape", "internal": false },
+    "801": { "module": "gemstone_type", "action": "create", "label": "Create Gemstone Type", "internal": false },
+    "802": { "module": "gemstone_type", "action": "read", "label": "View Gemstone Types", "internal": false },
+    "803": { "module": "gemstone_type", "action": "update", "label": "Update Gemstone Type", "internal": false },
+    "804": { "module": "gemstone_type", "action": "delete", "label": "Delete Gemstone Type", "internal": false },
+    "901": { "module": "gemstone_quality", "action": "create", "label": "Create Gemstone Quality", "internal": false },
+    "902": { "module": "gemstone_quality", "action": "read", "label": "View Gemstone Qualities", "internal": false },
+    "903": { "module": "gemstone_quality", "action": "update", "label": "Update Gemstone Quality", "internal": false },
+    "904": { "module": "gemstone_quality", "action": "delete", "label": "Delete Gemstone Quality", "internal": false },
+    "1001": { "module": "gemstone_color", "action": "create", "label": "Create Gemstone Color", "internal": false },
+    "1002": { "module": "gemstone_color", "action": "read", "label": "View Gemstone Colors", "internal": false },
+    "1003": { "module": "gemstone_color", "action": "update", "label": "Update Gemstone Color", "internal": false },
+    "1004": { "module": "gemstone_color", "action": "delete", "label": "Delete Gemstone Color", "internal": false },
+    "1101": { "module": "diamond_clarity_color", "action": "create", "label": "Create Diamond Clarity/Color", "internal": false },
+    "1102": { "module": "diamond_clarity_color", "action": "read", "label": "View Diamond Clarity/Colors", "internal": false },
+    "1103": { "module": "diamond_clarity_color", "action": "update", "label": "Update Diamond Clarity/Color", "internal": false },
+    "1104": { "module": "diamond_clarity_color", "action": "delete", "label": "Delete Diamond Clarity/Color", "internal": false },
+    "1201": { "module": "diamond_pricing", "action": "create", "label": "Create Diamond Price", "internal": false },
+    "1202": { "module": "diamond_pricing", "action": "read", "label": "View Diamond Prices", "internal": false },
+    "1203": { "module": "diamond_pricing", "action": "update", "label": "Update Diamond Price", "internal": false },
+    "1204": { "module": "diamond_pricing", "action": "delete", "label": "Delete Diamond Price", "internal": false },
+    "1301": { "module": "gemstone_pricing", "action": "create", "label": "Create Gemstone Price", "internal": false },
+    "1302": { "module": "gemstone_pricing", "action": "read", "label": "View Gemstone Prices", "internal": false },
+    "1303": { "module": "gemstone_pricing", "action": "update", "label": "Update Gemstone Price", "internal": false },
+    "1304": { "module": "gemstone_pricing", "action": "delete", "label": "Delete Gemstone Price", "internal": false },
+    "1401": { "module": "making_charge", "action": "create", "label": "Create Making Charge", "internal": false },
+    "1402": { "module": "making_charge", "action": "read", "label": "View Making Charges", "internal": false },
+    "1403": { "module": "making_charge", "action": "update", "label": "Update Making Charge", "internal": false },
+    "1404": { "module": "making_charge", "action": "delete", "label": "Delete Making Charge", "internal": false },
+    "1501": { "module": "other_charge", "action": "create", "label": "Create Other Charge", "internal": false },
+    "1502": { "module": "other_charge", "action": "read", "label": "View Other Charges", "internal": false },
+    "1503": { "module": "other_charge", "action": "update", "label": "Update Other Charge", "internal": false },
+    "1504": { "module": "other_charge", "action": "delete", "label": "Delete Other Charge", "internal": false },
+    "1601": { "module": "pearl_type", "action": "create", "label": "Create Pearl Type", "internal": false },
+    "1602": { "module": "pearl_type", "action": "read", "label": "View Pearl Types", "internal": false },
+    "1603": { "module": "pearl_type", "action": "update", "label": "Update Pearl Type", "internal": false },
+    "1604": { "module": "pearl_type", "action": "delete", "label": "Delete Pearl Type", "internal": false },
+    "1701": { "module": "pearl_quality", "action": "create", "label": "Create Pearl Quality", "internal": false },
+    "1702": { "module": "pearl_quality", "action": "read", "label": "View Pearl Qualities", "internal": false },
+    "1703": { "module": "pearl_quality", "action": "update", "label": "Update Pearl Quality", "internal": false },
+    "1704": { "module": "pearl_quality", "action": "delete", "label": "Delete Pearl Quality", "internal": false },
+    "1801": { "module": "mrp_markup", "action": "read", "label": "View MRP Markup", "internal": false },
+    "1802": { "module": "mrp_markup", "action": "update", "label": "Update MRP Markup", "internal": false },
+    "1901": { "module": "tag_group", "action": "create", "label": "Create Tag Group", "internal": false },
+    "1902": { "module": "tag_group", "action": "read", "label": "View Tag Groups", "internal": false },
+    "1903": { "module": "tag_group", "action": "update", "label": "Update Tag Group", "internal": false },
+    "1904": { "module": "tag_group", "action": "delete", "label": "Delete Tag Group", "internal": false },
+    "2001": { "module": "tag", "action": "create", "label": "Create Tag", "internal": false },
+    "2002": { "module": "tag", "action": "read", "label": "View Tags", "internal": false },
+    "2003": { "module": "tag", "action": "update", "label": "Update Tag", "internal": false },
+    "2004": { "module": "tag", "action": "delete", "label": "Delete Tag", "internal": false },
+    "2101": { "module": "category", "action": "create", "label": "Create Category", "internal": false },
+    "2102": { "module": "category", "action": "read", "label": "View Categories", "internal": false },
+    "2103": { "module": "category", "action": "update", "label": "Update Category", "internal": false },
+    "2104": { "module": "category", "action": "delete", "label": "Delete Category", "internal": false },
+    "2201": { "module": "badge", "action": "create", "label": "Create Badge", "internal": false },
+    "2202": { "module": "badge", "action": "read", "label": "View Badges", "internal": false },
+    "2203": { "module": "badge", "action": "update", "label": "Update Badge", "internal": false },
+    "2204": { "module": "badge", "action": "delete", "label": "Delete Badge", "internal": false },
+    "2301": { "module": "size_chart_group", "action": "create", "label": "Create Size Chart Group", "internal": false },
+    "2302": { "module": "size_chart_group", "action": "read", "label": "View Size Chart Groups", "internal": false },
+    "2303": { "module": "size_chart_group", "action": "update", "label": "Update Size Chart Group", "internal": false },
+    "2304": { "module": "size_chart_group", "action": "delete", "label": "Delete Size Chart Group", "internal": false },
+    "2401": { "module": "size_chart_value", "action": "create", "label": "Create Size Chart Value", "internal": false },
+    "2402": { "module": "size_chart_value", "action": "read", "label": "View Size Chart Values", "internal": false },
+    "2403": { "module": "size_chart_value", "action": "update", "label": "Update Size Chart Value", "internal": false },
+    "2404": { "module": "size_chart_value", "action": "delete", "label": "Delete Size Chart Value", "internal": false },
+    "2501": { "module": "product", "action": "create", "label": "Create Product", "internal": false },
+    "2502": { "module": "product", "action": "read", "label": "View Products", "internal": false },
+    "2503": { "module": "product", "action": "update", "label": "Update Product", "internal": false },
+    "2504": { "module": "product", "action": "delete", "label": "Delete Product", "internal": false },
+    "2505": { "module": "product", "action": "update_status", "label": "Update Product Status", "internal": false },
+    "2601": { "module": "pricing_rule", "action": "create", "label": "Create Pricing Rule", "internal": false },
+    "2602": { "module": "pricing_rule", "action": "read", "label": "View Pricing Rules", "internal": false },
+    "2603": { "module": "pricing_rule", "action": "update", "label": "Update Pricing Rule", "internal": false },
+    "2604": { "module": "pricing_rule", "action": "delete", "label": "Delete Pricing Rule", "internal": false },
+    "2701": { "module": "storefront_filter", "action": "read", "label": "View Storefront Filters", "internal": false },
+    "2702": { "module": "storefront_filter", "action": "update", "label": "Update Storefront Filter", "internal": false },
+    "2801": { "module": "cms", "action": "manage", "label": "Manage CMS", "internal": false }
+  }
+}

@@ -1,0 +1,15 @@
+export const badgeMessages = {
+  LIST_FETCHED: 'Badges fetched successfully',
+  FETCHED: 'Badge fetched successfully',
+  CREATED: 'Badge created successfully',
+  UPDATED: 'Badge updated successfully',
+  DELETED: 'Badge deleted successfully',
+  NOT_FOUND: 'Badge not found',
+  SLUG_EXISTS: 'A badge with this slug already exists',
+  NAME_REQUIRED: 'Name is required',
+  SLUG_REQUIRED: 'Slug is required',
+  BG_COLOR_REQUIRED: 'Background color is required',
+  FONT_COLOR_REQUIRED: 'Font color is required',
+  INVALID_POSITION: 'Position must be between 1 and 6',
+  INVALID_ID: 'Invalid badge ID',
+}

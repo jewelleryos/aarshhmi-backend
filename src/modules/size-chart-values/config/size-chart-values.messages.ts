@@ -1,0 +1,15 @@
+export const sizeChartValueMessages = {
+  LIST_FETCHED: 'Size chart values fetched successfully',
+  FETCHED: 'Size chart value fetched successfully',
+  CREATED: 'Size chart value created successfully',
+  UPDATED: 'Size chart value updated successfully',
+  DELETED: 'Size chart value deleted successfully',
+  NOT_FOUND: 'Size chart value not found',
+  GROUP_NOT_FOUND: 'Size chart group not found',
+  NAME_REQUIRED: 'Name is required',
+  GROUP_ID_REQUIRED: 'Size chart group is required',
+  DIFFERENCE_REQUIRED: 'Difference value is required',
+  INVALID_ID: 'Invalid size chart value ID',
+  CANNOT_DELETE_DEFAULT: 'Cannot delete the default size value. Please set another value as default first.',
+  DEFAULT_UPDATED: 'Default size value updated successfully',
+}

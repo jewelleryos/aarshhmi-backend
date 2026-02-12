@@ -1,0 +1,818 @@
+{
+    "id": "prod_06E0M4Q5MTM99DJY8TAAQ1SBP0",
+    "name": "The Heart Spark",
+    "slug": "the-heart-spark",
+    "short_description": "Gracefully cut, this heart-shaped diamond ring glows with light and love — a timeless symbol of affection and brilliance.",
+    "description": null,
+    "product_type": "JEWELLERY_DEFAULT",
+    "base_sku": "LWRG25-0010",
+    "style_sku": "LWRG25-0010",
+    "min_price": 2690360,
+    "max_price": 5471360,
+    "variant_count": 6,
+    "default_variant_id": "pvar_06E0M4Q5NV3GFK2PMKKZYVFT54",
+    "status": "draft",
+    "seo": {
+        "meta": {
+            "title": null,
+            "robots": null,
+            "keywords": null,
+            "canonical": null,
+            "description": null
+        },
+        "twitter": {
+            "url": null,
+            "media": null,
+            "siteName": null,
+            "cardTitle": null,
+            "description": null
+        },
+        "openGraph": {
+            "url": null,
+            "title": null,
+            "imageUrl": null,
+            "siteName": null,
+            "description": null
+        }
+    },
+    "metadata": {
+        "media": {
+            "colorMedia": [
+                {
+                    "items": [
+                        {
+                            "id": "x8o9kuu",
+                            "path": "/products/demo/screenshot-from-2026-01-21-18-49-40.png",
+                            "type": "image",
+                            "altText": null,
+                            "position": 1
+                        },
+                        {
+                            "id": "ws5hmtj",
+                            "path": "/products/demo/screenshot-from-2026-01-21-18-49-40.png",
+                            "type": "image",
+                            "altText": null,
+                            "position": 2
+                        },
+                        {
+                            "id": "3kb5z5o",
+                            "path": "/products/demo/screenshot-from-2026-01-21-18-49-40.png",
+                            "type": "image",
+                            "altText": null,
+                            "position": 3
+                        }
+                    ],
+                    "metalColorId": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR",
+                    "gemstoneSubMedia": []
+                },
+                {
+                    "items": [
+                        {
+                            "id": "94gw9r6",
+                            "path": "/products/demo/screenshot-from-2026-01-21-18-49-40.png",
+                            "type": "image",
+                            "altText": null,
+                            "position": 1
+                        }
+                    ],
+                    "metalColorId": "mclr_06E0G9JJF6F137CWJEH17X87GM",
+                    "gemstoneSubMedia": []
+                },
+                {
+                    "items": [
+                        {
+                            "id": "7b86g6s",
+                            "path": "/products/demo/screenshot-from-2026-01-21-18-49-40.png",
+                            "type": "image",
+                            "altText": null,
+                            "position": 1
+                        }
+                    ],
+                    "metalColorId": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8",
+                    "gemstoneSubMedia": []
+                }
+            ]
+        },
+        "stone": {
+            "pearl": null,
+            "diamond": {
+                "entries": [
+                    {
+                        "shapeId": "sshp_06E0GBN50X1X3WKHEKPN8MMAE8",
+                        "pricings": [
+                            {
+                                "pricingId": "sprc_06E0JTK753BWJ6S9NNA80MPV0W",
+                                "clarityColorId": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                            }
+                        ],
+                        "noOfStones": 2,
+                        "totalCarat": 2
+                    }
+                ],
+                "clarityColors": [
+                    {
+                        "id": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                    }
+                ]
+            },
+            "gemstone": null,
+            "hasPearl": false,
+            "hasDiamond": true,
+            "hasGemstone": false
+        },
+        "engraving": null,
+        "sizeChart": {
+            "hasSizeChart": true,
+            "sizeChartGroupId": "scgp_06E0KTFSRTCWG2BAVTFS836Q48"
+        },
+        "dimensions": {
+            "width": 7.65,
+            "height": 24.55,
+            "length": 20.9
+        },
+        "availableMetals": [
+            {
+                "colors": [
+                    {
+                        "colorId": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR"
+                    },
+                    {
+                        "colorId": "mclr_06E0G9JJF6F137CWJEH17X87GM"
+                    },
+                    {
+                        "colorId": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8"
+                    }
+                ],
+                "purities": [
+                    {
+                        "weight": 2,
+                        "purityId": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM"
+                    },
+                    {
+                        "weight": 3,
+                        "purityId": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0"
+                    }
+                ],
+                "metalTypeId": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+            }
+        ]
+    },
+    "published_at": null,
+    "created_at": "2026-01-29T14:05:36.548Z",
+    "updated_at": "2026-01-29T14:05:36.570Z",
+    "options": [
+        {
+            "id": "popt_06E0M4Q5N9ADPA7Q16DX6DSMNW",
+            "name": "Metal Type",
+            "rank": 1,
+            "values": [
+                {
+                    "id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                    "rank": 0
+                }
+            ]
+        },
+        {
+            "id": "popt_06E0M4Q5NE7EV1D7TNBPVKJVJ0",
+            "name": "Metal Color",
+            "rank": 2,
+            "values": [
+                {
+                    "id": "povl_06E0M4Q5NQ8JVXD9AVV933ACT4",
+                    "value": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR",
+                    "rank": 0
+                },
+                {
+                    "id": "povl_06E0M4Q5NMNH0BWFDF79STW01G",
+                    "value": "mclr_06E0G9JJF6F137CWJEH17X87GM",
+                    "rank": 0
+                },
+                {
+                    "id": "povl_06E0M4Q5NM7N179EGJTGPPA61M",
+                    "value": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8",
+                    "rank": 0
+                }
+            ]
+        },
+        {
+            "id": "popt_06E0M4Q5NFYR3V5S09AA2Z8168",
+            "name": "Metal Purity",
+            "rank": 3,
+            "values": [
+                {
+                    "id": "povl_06E0M4Q5NQCFKEGXH8FVJ6FX1M",
+                    "value": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM",
+                    "rank": 0
+                },
+                {
+                    "id": "povl_06E0M4Q5NPPX88K3CF4WVHR8X4",
+                    "value": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0",
+                    "rank": 0
+                }
+            ]
+        },
+        {
+            "id": "popt_06E0M4Q5NJC71V8W684GHKM3P0",
+            "name": "Diamond Clarity/Color",
+            "rank": 4,
+            "values": [
+                {
+                    "id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG",
+                    "rank": 0
+                }
+            ]
+        }
+    ],
+    "variants": [
+        {
+            "id": "pvar_06E0M4Q5NV3GFK2PMKKZYVFT54",
+            "sku": "LWRG25-0010-gold-rg-14k-vvs-ef",
+            "variant_name": null,
+            "price": 2690360,
+            "compare_at_price": 2753396,
+            "cost_price": 2690360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "sellingPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 80196,
+                    "finalPrice": 2753396,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 453200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2753396,
+                    "finalPriceWithoutTax": 2673200
+                }
+            },
+            "is_default": true,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR",
+                "metalPurity": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM",
+                "metalWeight": 2,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NQ8JVXD9AVV933ACT4",
+                    "value": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NQCFKEGXH8FVJ6FX1M",
+                    "value": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        },
+        {
+            "id": "pvar_06E0M4Q5NX9PHS7TW6KC5J2CY4",
+            "sku": "LWRG25-0010-gold-rg-18k-vvs-ef",
+            "variant_name": null,
+            "price": 5471360,
+            "compare_at_price": 5554996,
+            "cost_price": 5471360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "sellingPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 161796,
+                    "finalPrice": 5554996,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 673200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5554996,
+                    "finalPriceWithoutTax": 5393200
+                }
+            },
+            "is_default": false,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR",
+                "metalPurity": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0",
+                "metalWeight": 3,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NQ8JVXD9AVV933ACT4",
+                    "value": "mclr_06E0G9M1A26MF6FQ8RH6ZPK2DR"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NPPX88K3CF4WVHR8X4",
+                    "value": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        },
+        {
+            "id": "pvar_06E0M4Q5NX9AM2MQAPEDS2EY4M",
+            "sku": "LWRG25-0010-gold-wg-14k-vvs-ef",
+            "variant_name": null,
+            "price": 2690360,
+            "compare_at_price": 2753396,
+            "cost_price": 2690360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "sellingPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 80196,
+                    "finalPrice": 2753396,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 453200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2753396,
+                    "finalPriceWithoutTax": 2673200
+                }
+            },
+            "is_default": false,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9JJF6F137CWJEH17X87GM",
+                "metalPurity": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM",
+                "metalWeight": 2,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NMNH0BWFDF79STW01G",
+                    "value": "mclr_06E0G9JJF6F137CWJEH17X87GM"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NQCFKEGXH8FVJ6FX1M",
+                    "value": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        },
+        {
+            "id": "pvar_06E0M4Q5NYVX2XVFBS0KJ62K8C",
+            "sku": "LWRG25-0010-gold-wg-18k-vvs-ef",
+            "variant_name": null,
+            "price": 5471360,
+            "compare_at_price": 5554996,
+            "cost_price": 5471360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "sellingPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 161796,
+                    "finalPrice": 5554996,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 673200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5554996,
+                    "finalPriceWithoutTax": 5393200
+                }
+            },
+            "is_default": false,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9JJF6F137CWJEH17X87GM",
+                "metalPurity": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0",
+                "metalWeight": 3,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NMNH0BWFDF79STW01G",
+                    "value": "mclr_06E0G9JJF6F137CWJEH17X87GM"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NPPX88K3CF4WVHR8X4",
+                    "value": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        },
+        {
+            "id": "pvar_06E0M4Q5NZ5548B752DW8GQTPR",
+            "sku": "LWRG25-0010-gold-yg-14k-vvs-ef",
+            "variant_name": null,
+            "price": 2690360,
+            "compare_at_price": 2753396,
+            "cost_price": 2690360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "sellingPrice": {
+                    "taxAmount": 78360,
+                    "finalPrice": 2690360,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 412000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2690360,
+                    "finalPriceWithoutTax": 2612000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 80196,
+                    "finalPrice": 2753396,
+                    "metalPrice": 2000000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 453200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 2753396,
+                    "finalPriceWithoutTax": 2673200
+                }
+            },
+            "is_default": false,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8",
+                "metalPurity": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM",
+                "metalWeight": 2,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NM7N179EGJTGPPA61M",
+                    "value": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NQCFKEGXH8FVJ6FX1M",
+                    "value": "mpur_06E0G9QFSEQ8T46HQ2E9NEB7FM"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        },
+        {
+            "id": "pvar_06E0M4Q5NWEB1EPQW0NYGHRZNG",
+            "sku": "LWRG25-0010-gold-yg-18k-vvs-ef",
+            "variant_name": null,
+            "price": 5471360,
+            "compare_at_price": 5554996,
+            "cost_price": 5471360,
+            "price_components": {
+                "costPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "sellingPrice": {
+                    "taxAmount": 159360,
+                    "finalPrice": 5471360,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 200000,
+                    "makingCharge": 612000,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5471360,
+                    "finalPriceWithoutTax": 5312000
+                },
+                "compareAtPrice": {
+                    "taxAmount": 161796,
+                    "finalPrice": 5554996,
+                    "metalPrice": 4500000,
+                    "pearlPrice": 0,
+                    "taxIncluded": true,
+                    "diamondPrice": 220000,
+                    "makingCharge": 673200,
+                    "gemstonePrice": 0,
+                    "finalPriceWithTax": 5554996,
+                    "finalPriceWithoutTax": 5393200
+                }
+            },
+            "is_default": false,
+            "is_available": true,
+            "stock_quantity": 0,
+            "metadata": {
+                "metalType": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW",
+                "metalColor": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8",
+                "metalPurity": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0",
+                "metalWeight": 3,
+                "gemstoneColor": null,
+                "diamondClarityColor": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+            },
+            "option_values": [
+                {
+                    "option_name": "Metal Type",
+                    "option_value_id": "povl_06E0M4Q5NPENTF9EJVNW7XH48M",
+                    "value": "mtyp_06E0G9F7QYPSN4EM8KHDK8B5GW"
+                },
+                {
+                    "option_name": "Metal Color",
+                    "option_value_id": "povl_06E0M4Q5NM7N179EGJTGPPA61M",
+                    "value": "mclr_06E0G9H5HHZDCRR7R40ARCTBQ8"
+                },
+                {
+                    "option_name": "Metal Purity",
+                    "option_value_id": "povl_06E0M4Q5NPPX88K3CF4WVHR8X4",
+                    "value": "mpur_06E0G9P4EWN06ZR0M06CQAT3B0"
+                },
+                {
+                    "option_name": "Diamond Clarity/Color",
+                    "option_value_id": "povl_06E0M4Q5NPN41AZWDSP18SXS10",
+                    "value": "sqty_06E0GAA652X0T8T13CNRVPQXEG"
+                }
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "id": "cat_06E0GC18NTGA5QFBBX3P19EWE0",
+            "name": "Rings",
+            "slug": "rings",
+            "is_primary": true
+        },
+        {
+            "id": "cat_06E0GC49WE2RJPQ9ZAANW9ZACM",
+            "name": "Single Stone Ring",
+            "slug": "single-stone-ring",
+            "is_primary": false
+        }
+    ],
+    "tags": [
+        {
+            "id": "tags_06E0G9F7RXFS2QXARKMMQZKXBM",
+            "name": "Gold",
+            "slug": "gold",
+            "tag_group_id": "tagg_06E09C24P47W8MEZ3N68PMVEB0",
+            "tag_group_name": "Metal Type",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0G9H5JF3JETY51P5HD7X0VM",
+            "name": "Yellow Gold",
+            "slug": "yg",
+            "tag_group_id": "tagg_06E09C7X5XF12YRVJ7FNXQ17FW",
+            "tag_group_name": "Metal Color",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0G9JJG35GJ8X80MB9BCGYT0",
+            "name": "White Gold",
+            "slug": "wg",
+            "tag_group_id": "tagg_06E09C7X5XF12YRVJ7FNXQ17FW",
+            "tag_group_name": "Metal Color",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0G9M1AX8NVBKDRX2MYBKTZ4",
+            "name": "Rose Gold",
+            "slug": "rg",
+            "tag_group_id": "tagg_06E09C7X5XF12YRVJ7FNXQ17FW",
+            "tag_group_name": "Metal Color",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0G9P4F5BDBB5PYFFS26DX9G",
+            "name": "18k",
+            "slug": "18k",
+            "tag_group_id": "tagg_06E09CA9KZQYR8F1QNJKVHR6S0",
+            "tag_group_name": "Metal Purity",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0G9QFTB51BW2E91CJZVY5GG",
+            "name": "14k",
+            "slug": "14k",
+            "tag_group_id": "tagg_06E09CA9KZQYR8F1QNJKVHR6S0",
+            "tag_group_name": "Metal Purity",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0GAA65XJJHJWG26CS69B93R",
+            "name": "vvs-ef",
+            "slug": "vvs-ef",
+            "tag_group_id": "tagg_06E09GHN7Z33YRGABEH493TGG8",
+            "tag_group_name": "Diamond Clarity Color",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0GBN51TSM1P6QFZVS4VETFR",
+            "name": "Round",
+            "slug": "round",
+            "tag_group_id": "tagg_06E09GXYGW0GZCEV9XNF68K1KR",
+            "tag_group_name": "Stone Shape",
+            "is_system_generated": true
+        },
+        {
+            "id": "tags_06E0GCD87KBGXAKT51PDDVV2QW",
+            "name": "Male",
+            "slug": "male",
+            "tag_group_id": "tagg_06E0GC97VSKTRH8MQ3N8Q0DVJW",
+            "tag_group_name": "Gender",
+            "is_system_generated": false
+        },
+        {
+            "id": "tags_06E0GCF9Q4VN61N36393JTRHF0",
+            "name": "Kids",
+            "slug": "kids",
+            "tag_group_id": "tagg_06E0GC97VSKTRH8MQ3N8Q0DVJW",
+            "tag_group_name": "Gender",
+            "is_system_generated": false
+        }
+    ],
+    "badges": [
+        {
+            "id": "bagd_06E0GCKZGAR927XAM5KM3TF79W",
+            "name": "Latest",
+            "slug": "latest",
+            "bg_color": "#ffffff",
+            "font_color": "#000000"
+        }
+    ],
+    "_summary": {
+        "productId": "prod_06E0M4Q5MTM99DJY8TAAQ1SBP0",
+        "productName": "The Heart Spark",
+        "optionsCount": 4,
+        "variantsCount": 6,
+        "categoriesCount": 2,
+        "tagsCount": 10,
+        "badgesCount": 1
+    }
+}

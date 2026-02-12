@@ -1,0 +1,15 @@
+export const tagMessages = {
+  LIST_FETCHED: 'Tags fetched successfully',
+  FETCHED: 'Tag fetched successfully',
+  CREATED: 'Tag created successfully',
+  UPDATED: 'Tag updated successfully',
+  SEO_UPDATED: 'Tag SEO updated successfully',
+  DELETED: 'Tag deleted successfully',
+  NOT_FOUND: 'Tag not found',
+  GROUP_NOT_FOUND: 'Tag group not found',
+  SLUG_EXISTS: 'A tag with this slug already exists in this group',
+  NAME_REQUIRED: 'Name is required',
+  GROUP_ID_REQUIRED: 'Tag group ID is required',
+  INVALID_ID: 'Invalid tag ID',
+  SYSTEM_GENERATED_ERROR: 'System-generated tags cannot be modified',
+}

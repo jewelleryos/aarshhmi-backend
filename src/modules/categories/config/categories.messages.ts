@@ -1,0 +1,16 @@
+export const categoryMessages = {
+  LIST_FETCHED: 'Categories fetched successfully',
+  FETCHED: 'Category fetched successfully',
+  CREATED: 'Category created successfully',
+  UPDATED: 'Category updated successfully',
+  SEO_UPDATED: 'Category SEO updated successfully',
+  DELETED: 'Category deleted successfully',
+  NOT_FOUND: 'Category not found',
+  PARENT_NOT_FOUND: 'Parent category not found',
+  SLUG_EXISTS: 'A category with this slug already exists',
+  NAME_REQUIRED: 'Name is required',
+  INVALID_ID: 'Invalid category ID',
+  CIRCULAR_REFERENCE: 'Cannot set a child category as parent (circular reference)',
+  MAX_DEPTH_EXCEEDED: 'Maximum hierarchy depth exceeded (only one level allowed)',
+  CANNOT_SET_SELF_AS_PARENT: 'Cannot set a category as its own parent',
+}
