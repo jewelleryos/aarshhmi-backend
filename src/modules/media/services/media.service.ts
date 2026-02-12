@@ -13,7 +13,7 @@ import type {
 } from '../types/media.types'
 
 // Strip storage zone name from Bunny path
-// Bunny returns: /luminiquejewel/demo/ -> we need: /demo/
+// Bunny returns: /Aarshhmijewel/demo/ -> we need: /demo/
 const stripStoragePrefix = (bunnyPath: string): string => {
   // Get storage name without trailing slash
   const storageName = bunnyConfig.storageName.replace(/\/$/, '')
