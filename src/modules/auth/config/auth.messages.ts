@@ -8,7 +8,7 @@ export const authMessages = {
 
   // Forgot Password
   FORGOT_PASSWORD_SUCCESS: 'If the email exists, a password reset link has been sent',
-  FORGOT_PASSWORD_EMAIL_SUBJECT: 'Reset your Luminique password',
+  FORGOT_PASSWORD_EMAIL_SUBJECT: 'Reset your Aarshhmi password',
 
   // Reset Password
   RESET_TOKEN_VALID: 'Token is valid',
