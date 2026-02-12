@@ -9,7 +9,7 @@ A TypeScript service for interacting with Bunny.net Edge Storage API. This servi
 ## Environment Variables
 
 ```env
-BUNNY_STORAGE_ZONE=luminique          # Storage zone name
+BUNNY_STORAGE_ZONE=Aarshhmi          # Storage zone name
 BUNNY_STORAGE_KEY=xxx                 # Storage zone API key (from FTP & API Access)
 BUNNY_STORAGE_REGION=sg               # Region code (de, uk, ny, la, sg, se, br, jh, syd)
 BUNNY_CDN_URL=https://cdn.example.com # CDN pull zone URL for public access

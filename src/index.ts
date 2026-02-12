@@ -30,8 +30,7 @@ import { productRoutes } from './modules/product/routes/product.routes'
 import { pricingRuleRoutes } from './modules/pricing-rule/routes/pricing-rule.routes'
 import { storefrontFiltersRoutes } from './modules/storefront-filters/routes/storefront-filters.routes'
 import { customerAuthRoutes } from './modules/customer-auth/routes/customer-auth.routes'
-import { cmsRoutes } from './modules/cms/routes/cms.routes'
-import { cmsStorefrontRoutes } from './modules/cms/routes/storefront/cms-storefront.routes'
+
 
 const app = new Hono()
 
@@ -61,7 +60,7 @@ app.get('/health', (c) => {
 })
 
 app.get('/', (c) => {
-  return c.json({ message: 'Luminique API' })
+  return c.json({ message: 'Aarshhmi API' })
 })
 
 // Routes
@@ -93,8 +92,7 @@ app.route('/api/products', productRoutes)
 app.route('/api/pricing-rules', pricingRuleRoutes)
 app.route('/api/storefront-filters', storefrontFiltersRoutes)
 app.route('/api/customer/auth', customerAuthRoutes)
-app.route('/api/cms', cmsRoutes)
-app.route('/api/storefront/cms', cmsStorefrontRoutes)
+
 
 // Server configuration
 const port = Number(process.env.PORT) || 3000
