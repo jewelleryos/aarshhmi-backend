@@ -6,6 +6,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { OtherCharge, OtherChargeListResponse } from '../types/other-charge.types'
 
@@ -38,6 +39,8 @@ otherChargeRoutes.post('/', authWithPermission(PERMISSIONS.OTHER_CHARGE.CREATE),
     const body = await c.req.json()
     const data = createOtherChargeSchema.parse(body)
     const result = await otherChargeService.create(data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('other_charge', user.id)
     return successResponse<OtherCharge>(c, otherChargeMessages.CREATED, result, 201)
   } catch (error) {
     return errorHandler(error, c)
@@ -51,6 +54,8 @@ otherChargeRoutes.put('/:id', authWithPermission(PERMISSIONS.OTHER_CHARGE.UPDATE
     const body = await c.req.json()
     const data = updateOtherChargeSchema.parse(body)
     const result = await otherChargeService.update(id, data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('other_charge', user.id)
     return successResponse<OtherCharge>(c, otherChargeMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)
@@ -62,6 +67,8 @@ otherChargeRoutes.delete('/:id', authWithPermission(PERMISSIONS.OTHER_CHARGE.DEL
   try {
     const id = c.req.param('id')
     await otherChargeService.delete(id)
+    const user = c.get('user')
+    priceRecalculationService.trigger('other_charge', user.id)
     return successResponse(c, otherChargeMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
