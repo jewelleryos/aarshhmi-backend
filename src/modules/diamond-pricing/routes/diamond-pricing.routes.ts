@@ -12,6 +12,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { DiamondPrice, DiamondPriceListResponse, BulkCreateResult, BulkUpdateResult } from '../types/diamond-pricing.types'
 
@@ -164,6 +165,8 @@ diamondPricingRoutes.post('/bulk-update', authWithPermission(PERMISSIONS.DIAMOND
     }
 
     const result = await diamondPricingBulkService.processBulkUpdate(file)
+    const user = c.get('user')
+    priceRecalculationService.trigger('diamond_pricing_bulk', user.id)
 
     const message =
       result.summary.failed > 0
@@ -208,6 +211,8 @@ diamondPricingRoutes.put('/:id', authWithPermission(PERMISSIONS.DIAMOND_PRICING.
     const body = await c.req.json()
     const data = updateDiamondPriceSchema.parse(body)
     const result = await diamondPricingService.update(id, data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('diamond_pricing', user.id)
     return successResponse<DiamondPrice>(c, diamondPricingMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)
