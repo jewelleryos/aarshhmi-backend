@@ -9,6 +9,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { PricingRule } from '../types/pricing-rule.types'
 
@@ -41,6 +42,8 @@ pricingRuleRoutes.post('/', authWithPermission(PERMISSIONS.PRICING_RULE.CREATE),
     const body = await c.req.json()
     const data = createPricingRuleSchema.parse(body)
     const result = await pricingRuleService.create(data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('pricing_rule', user.id)
     return successResponse<PricingRule>(c, pricingRuleMessages.CREATED, result, 201)
   } catch (error) {
     return errorHandler(error, c)
@@ -54,6 +57,8 @@ pricingRuleRoutes.put('/:id', authWithPermission(PERMISSIONS.PRICING_RULE.UPDATE
     const body = await c.req.json()
     const data = updatePricingRuleSchema.parse(body)
     const result = await pricingRuleService.update(id, data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('pricing_rule', user.id)
     return successResponse<PricingRule>(c, pricingRuleMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)
@@ -65,6 +70,8 @@ pricingRuleRoutes.delete('/:id', authWithPermission(PERMISSIONS.PRICING_RULE.DEL
   try {
     const id = c.req.param('id')
     await pricingRuleService.delete(id)
+    const user = c.get('user')
+    priceRecalculationService.trigger('pricing_rule', user.id)
     return successResponse(c, pricingRuleMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)

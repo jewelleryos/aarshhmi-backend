@@ -12,6 +12,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { GemstonePrice, GemstonePriceListResponse, BulkCreateResult, BulkUpdateResult } from '../types/gemstone-pricing.types'
 
@@ -164,6 +165,8 @@ gemstonePricingRoutes.post('/bulk-update', authWithPermission(PERMISSIONS.GEMSTO
     }
 
     const result = await gemstonePricingBulkService.processBulkUpdate(file)
+    const user = c.get('user')
+    priceRecalculationService.trigger('gemstone_pricing_bulk', user.id)
 
     const message =
       result.summary.failed > 0
@@ -208,6 +211,8 @@ gemstonePricingRoutes.put('/:id', authWithPermission(PERMISSIONS.GEMSTONE_PRICIN
     const body = await c.req.json()
     const data = updateGemstonePriceSchema.parse(body)
     const result = await gemstonePricingService.update(id, data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('gemstone_pricing', user.id)
     return successResponse<GemstonePrice>(c, gemstonePricingMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)

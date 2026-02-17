@@ -26,8 +26,8 @@ const STONE_GROUPS = [
     description: '',
   },
   {
-    name: 'Pearls',
-    slug: 'pearls',
+    name: 'Pearl',
+    slug: 'pearl',
     description: '',
     id: STONE_GROUP_IDS.PEARLS,
   },
