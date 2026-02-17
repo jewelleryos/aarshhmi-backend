@@ -6,6 +6,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { MetalPurityWithMetalType, MetalPurityListResponse } from '../types/metal-purity.types'
 
@@ -83,6 +84,10 @@ metalPurityRoutes.put('/:id', authWithPermission(PERMISSIONS.METAL_PURITY.UPDATE
     const body = await c.req.json()
     const data = updateMetalPuritySchema.parse(body)
     const result = await metalPurityService.update(id, data)
+    if (data.price !== undefined) {
+      const user = c.get('user')
+      priceRecalculationService.trigger('metal_purity', user.id)
+    }
     return successResponse<MetalPurityWithMetalType>(c, metalPurityMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)

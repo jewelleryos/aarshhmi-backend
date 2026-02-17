@@ -156,4 +156,7 @@ export const PERMISSIONS = {
   CMS: {
     MANAGE: 2801,
   },
+  PRICE_RECALCULATION: {
+    READ: 2901,
+  },
 } as const

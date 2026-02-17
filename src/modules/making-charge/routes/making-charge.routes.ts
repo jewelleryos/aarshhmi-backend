@@ -6,6 +6,7 @@ import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
 import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
+import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { MakingChargeWithMetalType, MakingChargeListResponse } from '../types/making-charge.types'
 
@@ -51,6 +52,8 @@ makingChargeRoutes.put('/:id', authWithPermission(PERMISSIONS.MAKING_CHARGE.UPDA
     const body = await c.req.json()
     const data = updateMakingChargeSchema.parse(body)
     const result = await makingChargeService.update(id, data)
+    const user = c.get('user')
+    priceRecalculationService.trigger('making_charge', user.id)
     return successResponse<MakingChargeWithMetalType>(c, makingChargeMessages.UPDATED, result)
   } catch (error) {
     return errorHandler(error, c)
