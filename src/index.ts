@@ -31,7 +31,7 @@ import { pricingRuleRoutes } from './modules/pricing-rule/routes/pricing-rule.ro
 import { storefrontFiltersRoutes } from './modules/storefront-filters/routes/storefront-filters.routes'
 import { customerAuthRoutes } from './modules/customer-auth/routes/customer-auth.routes'
 import { priceRecalculationRoutes } from './modules/price-recalculation/routes/price-recalculation.routes'
-
+import { storefrontRoutes } from './modules/storefront/routes/storefront.routes'
 
 const app = new Hono()
 
@@ -93,6 +93,7 @@ app.route('/api/products', productRoutes)
 app.route('/api/pricing-rules', pricingRuleRoutes)
 app.route('/api/storefront-filters', storefrontFiltersRoutes)
 app.route('/api/customer/auth', customerAuthRoutes)
+app.route('/api/storefront', storefrontRoutes)
 app.route('/api/price-recalculation', priceRecalculationRoutes)
 
 
