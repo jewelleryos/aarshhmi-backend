@@ -15,6 +15,7 @@ import { PERMISSIONS } from '../../../config/permissions.constants'
 import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { DiamondPrice, DiamondPriceListResponse, BulkCreateResult, BulkUpdateResult } from '../types/diamond-pricing.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const diamondPricingRoutes = new Hono<AppEnv>()
 
@@ -181,6 +182,20 @@ diamondPricingRoutes.post('/bulk-update', authWithPermission(PERMISSIONS.DIAMOND
 
 // ============ END BULK OPERATION ROUTES ============
 
+// GET /api/diamond-prices/:id/check-dependency - Check dependencies before deletion
+diamondPricingRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.DIAMOND_PRICING.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await diamondPricingService.checkDependencies(id)
+    const message = result.can_delete
+      ? diamondPricingMessages.NO_DEPENDENCIES
+      : diamondPricingMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/diamond-prices/:id - Get single diamond price
 diamondPricingRoutes.get('/:id', authWithPermission(PERMISSIONS.DIAMOND_PRICING.READ), async (c) => {
   try {
@@ -219,4 +234,13 @@ diamondPricingRoutes.put('/:id', authWithPermission(PERMISSIONS.DIAMOND_PRICING.
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/diamond-prices/:id - Delete diamond price
+diamondPricingRoutes.delete('/:id', authWithPermission(PERMISSIONS.DIAMOND_PRICING.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await diamondPricingService.delete(id)
+    return successResponse(c, diamondPricingMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

@@ -10,6 +10,7 @@ import type {
   DiamondPriceListResponse,
   DiamondPriceFilters,
 } from '../types/diamond-pricing.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const diamondPricingService = {
   // List all diamond prices with optional filters
@@ -233,6 +234,57 @@ export const diamondPricingService = {
     await db.query(`UPDATE stone_prices SET ${updates.join(', ')} WHERE id = $${paramIndex}`, values)
 
     return this.getById(id)
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    // Custom JSONB query — diamond pricing IDs are stored in products.metadata
+    const result = await db.query(
+      `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+       FROM products p,
+         jsonb_array_elements(p.metadata->'stone'->'diamond'->'entries') AS entry,
+         jsonb_array_elements(entry->'pricings') AS pricing
+       WHERE p.status != 'archived'
+         AND pricing->>'pricingId' = $1
+       ORDER BY p.name`,
+      [id]
+    )
+
+    const dependencies: DependencyGroup[] = []
+
+    if (result.rows.length > 0) {
+      dependencies.push({ type: 'product', count: result.rows.length, items: result.rows })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete diamond pricing (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      throw new AppError(
+        `Cannot delete. Used by: ${check.dependencies[0].count} product(s)`,
+        HTTP_STATUS.CONFLICT
+      )
+    }
+
+    // No system tags to clean up (diamond pricing doesn't have them)
+
+    const result = await db.query(
+      `DELETE FROM stone_prices WHERE id = $1 AND stone_group_id = $2 RETURNING id`,
+      [id, STONE_GROUPS.DIAMOND]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(diamondPricingMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 
   // Get diamond pricings for product dropdown (for price calculation)

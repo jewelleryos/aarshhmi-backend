@@ -6,6 +6,10 @@ export const diamondPricingMessages = {
   UPDATED: 'Diamond price updated successfully',
   DELETED: 'Diamond price deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Diamond pricing has dependencies',
+
   // Errors
   NOT_FOUND: 'Diamond price not found',
   DUPLICATE_ENTRY: 'A price entry with this combination already exists',
