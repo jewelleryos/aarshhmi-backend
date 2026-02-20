@@ -13,6 +13,7 @@ import { STONE_GROUPS } from '../../../config/stone.config'
 import { db } from '../../../lib/db'
 import type { AppEnv } from '../../../types/hono.types'
 import type { DiamondClarityColor, DiamondClarityColorListResponse } from '../types/diamond-clarity-color.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const diamondClarityColorRoutes = new Hono<AppEnv>()
 
@@ -73,6 +74,18 @@ diamondClarityColorRoutes.get('/', authWithPermission(PERMISSIONS.DIAMOND_CLARIT
   }
 })
 
+// GET /api/diamond-clarity-color/:id/check-dependency - Check dependencies before deletion
+diamondClarityColorRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.DIAMOND_CLARITY_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await diamondClarityColorService.checkDependencies(id)
+    const message = result.can_delete ? diamondClarityColorMessages.NO_DEPENDENCIES : diamondClarityColorMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/diamond-clarity-color/:id - Get single diamond clarity/color
 diamondClarityColorRoutes.get('/:id', authWithPermission(PERMISSIONS.DIAMOND_CLARITY_COLOR.READ), async (c) => {
   try {
@@ -104,6 +117,17 @@ diamondClarityColorRoutes.put('/:id', authWithPermission(PERMISSIONS.DIAMOND_CLA
     const data = updateDiamondClarityColorSchema.parse(body)
     const result = await diamondClarityColorService.update(id, data)
     return successResponse<DiamondClarityColor>(c, diamondClarityColorMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/diamond-clarity-color/:id - Delete diamond clarity/color
+diamondClarityColorRoutes.delete('/:id', authWithPermission(PERMISSIONS.DIAMOND_CLARITY_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await diamondClarityColorService.delete(id)
+    return successResponse(c, diamondClarityColorMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }
