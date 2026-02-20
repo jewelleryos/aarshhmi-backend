@@ -3,6 +3,7 @@ import { metalColorMessages } from '../config/metal-color.messages'
 import { AppError } from '../../../utils/app-error'
 import { HTTP_STATUS } from '../../../config/constants'
 import { SYSTEM_TAG_GROUPS } from '../../../config/tag.config'
+import { getProductDependenciesByOptionValue } from '../../../utils/dependency-check'
 import type {
   MetalColor,
   MetalColorWithMetalType,
@@ -10,6 +11,7 @@ import type {
   UpdateMetalColorRequest,
   MetalColorListResponse,
 } from '../types/metal-color.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const metalColorService = {
   // List all metal colors with metal type name
@@ -177,8 +179,42 @@ export const metalColorService = {
     return this.getById(id)
   },
 
-  // Delete metal color (for future use)
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const products = await getProductDependenciesByOptionValue('metal_color', id)
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete metal color (with server-side dependency safety check)
   async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      throw new AppError(
+        `Cannot delete. Used by: ${check.dependencies[0].count} product(s)`,
+        HTTP_STATUS.CONFLICT
+      )
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    // Delete the metal color
     const result = await db.query(
       `DELETE FROM metal_colors WHERE id = $1 RETURNING id`,
       [id]

@@ -6,6 +6,9 @@ export const metalColorMessages = {
   UPDATED: 'Metal color updated successfully',
   DELETED: 'Metal color deleted successfully',
 
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Metal color has dependencies',
+
   // Errors
   NOT_FOUND: 'Metal color not found',
   SLUG_EXISTS: 'A metal color with this slug already exists',

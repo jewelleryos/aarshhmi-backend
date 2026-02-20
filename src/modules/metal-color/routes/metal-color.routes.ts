@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { MetalColorWithMetalType, MetalColorListResponse } from '../types/metal-color.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const metalColorRoutes = new Hono<AppEnv>()
 
@@ -89,4 +90,25 @@ metalColorRoutes.put('/:id', authWithPermission(PERMISSIONS.METAL_COLOR.UPDATE),
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// GET /api/metal-colors/:id/check-dependency - Check dependencies before deletion
+metalColorRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.METAL_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await metalColorService.checkDependencies(id)
+    const message = result.can_delete ? metalColorMessages.NO_DEPENDENCIES : metalColorMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/metal-colors/:id - Delete metal color
+metalColorRoutes.delete('/:id', authWithPermission(PERMISSIONS.METAL_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await metalColorService.delete(id)
+    return successResponse(c, metalColorMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
