@@ -6,6 +6,10 @@ export const gemstoneTypeMessages = {
   UPDATED: 'Gemstone type updated successfully',
   DELETED: 'Gemstone type deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Gemstone type has dependencies',
+
   // Errors
   NOT_FOUND: 'Gemstone type not found',
   SLUG_EXISTS: 'A gemstone type with this slug already exists',
