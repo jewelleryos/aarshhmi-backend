@@ -6,6 +6,10 @@ export const stoneShapeMessages = {
   UPDATED: 'Stone shape updated successfully',
   DELETED: 'Stone shape deleted successfully',
 
+  // Dependencies
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Stone shape has dependencies',
+
   // Errors
   NOT_FOUND: 'Stone shape not found',
   SLUG_EXISTS: 'A stone shape with this slug already exists',

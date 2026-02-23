@@ -1,4 +1,5 @@
 import { db } from '../../../lib/db'
+import { STONE_GROUPS } from '../../../config/stone.config'
 import { SYSTEM_TAG_GROUPS } from '../../../config/tag.config'
 import { stoneShapeMessages } from '../config/stone-shape.messages'
 import { AppError } from '../../../utils/app-error'
@@ -9,6 +10,7 @@ import type {
   UpdateStoneShapeRequest,
   StoneShapeListResponse,
 } from '../types/stone-shape.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const stoneShapeService = {
   // List all stone shapes
@@ -160,8 +162,83 @@ export const stoneShapeService = {
     return this.getById(id)
   },
 
-  // Delete stone shape (for future use)
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const [products, diamondPrices, gemstonePrices] = await Promise.all([
+      // Tag-based query — stone shapes have system tags linked to products via product_tags
+      db.query(
+        `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+         FROM products p
+         JOIN product_tags pt ON pt.product_id = p.id
+         JOIN tags t ON t.id = pt.tag_id
+         WHERE t.source_id = $1 AND t.is_system_generated = TRUE
+           AND p.status != 'archived'
+         ORDER BY p.name`,
+        [id]
+      ).then(r => r.rows),
+
+      // Hard FK — stone_prices.stone_shape_id (diamond group)
+      db.query(
+        `SELECT sp.id, CONCAT(st.name, ' - ', ss.name, ' - ', sq.name, ' (', sp.ct_from, '-', sp.ct_to, ' ct)') AS name
+         FROM stone_prices sp
+         JOIN stone_types st ON sp.stone_type_id = st.id
+         JOIN stone_shapes ss ON sp.stone_shape_id = ss.id
+         JOIN stone_qualities sq ON sp.stone_quality_id = sq.id
+         WHERE sp.stone_shape_id = $1 AND sp.stone_group_id = $2
+         ORDER BY st.name, ss.name, sp.ct_from`,
+        [id, STONE_GROUPS.DIAMOND]
+      ).then(r => r.rows),
+
+      // Hard FK — stone_prices.stone_shape_id (gemstone group)
+      db.query(
+        `SELECT sp.id, CONCAT(st.name, ' - ', ss.name, ' - ', sq.name, ' (', sp.ct_from, '-', sp.ct_to, ' ct)') AS name
+         FROM stone_prices sp
+         JOIN stone_types st ON sp.stone_type_id = st.id
+         JOIN stone_shapes ss ON sp.stone_shape_id = ss.id
+         JOIN stone_qualities sq ON sp.stone_quality_id = sq.id
+         WHERE sp.stone_shape_id = $1 AND sp.stone_group_id = $2
+         ORDER BY st.name, ss.name, sp.ct_from`,
+        [id, STONE_GROUPS.GEMSTONE]
+      ).then(r => r.rows),
+    ])
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+
+    if (diamondPrices.length > 0) {
+      dependencies.push({ type: 'diamond_price', count: diamondPrices.length, items: diamondPrices })
+    }
+
+    if (gemstonePrices.length > 0) {
+      dependencies.push({ type: 'gemstone_price', count: gemstonePrices.length, items: gemstonePrices })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete stone shape (with server-side dependency safety check)
   async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
     const result = await db.query(
       `DELETE FROM stone_shapes WHERE id = $1 RETURNING id`,
       [id]
