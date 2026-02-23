@@ -60,7 +60,6 @@ export interface MetalPurity {
  */
 export interface SelectedMetal {
   metalTypeId: string
-  colors: MetalColor[]
   purities: MetalPurity[]
 }
 
@@ -68,6 +67,7 @@ export interface SelectedMetal {
  * Metal details for jewellery-default product
  */
 export interface MetalDetails {
+  colors: MetalColor[]
   selectedMetals: SelectedMetal[]
 }
 

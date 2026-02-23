@@ -6,6 +6,9 @@ export const metalPurityMessages = {
   UPDATED: 'Metal purity updated successfully',
   DELETED: 'Metal purity deleted successfully',
 
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Metal purity has dependencies',
+
   // Errors
   NOT_FOUND: 'Metal purity not found',
   SLUG_EXISTS: 'A metal purity with this slug already exists',

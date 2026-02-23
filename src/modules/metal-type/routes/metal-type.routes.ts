@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { MetalType, MetalTypeListResponse } from '../types/metal-type.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const metalTypeRoutes = new Hono<AppEnv>()
 
@@ -125,4 +126,27 @@ metalTypeRoutes.put('/:id', authWithPermission(PERMISSIONS.METAL_TYPE.UPDATE), a
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// GET /api/metal-types/:id/check-dependency - Check if metal type can be deleted
+metalTypeRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.METAL_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await metalTypeService.checkDependencies(id)
+    const message = result.can_delete
+      ? metalTypeMessages.NO_DEPENDENCIES
+      : metalTypeMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/metal-types/:id - Delete metal type
+metalTypeRoutes.delete('/:id', authWithPermission(PERMISSIONS.METAL_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await metalTypeService.delete(id)
+    return successResponse(c, metalTypeMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

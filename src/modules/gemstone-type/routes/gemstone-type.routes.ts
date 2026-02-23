@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { GemstoneType, GemstoneTypeListResponse } from '../types/gemstone-type.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const gemstoneTypeRoutes = new Hono<AppEnv>()
 
@@ -53,6 +54,20 @@ gemstoneTypeRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODU
   }
 })
 
+// GET /api/gemstone-types/:id/check-dependency - Check dependencies before deletion
+gemstoneTypeRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.GEMSTONE_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await gemstoneTypeService.checkDependencies(id)
+    const message = result.can_delete
+      ? gemstoneTypeMessages.NO_DEPENDENCIES
+      : gemstoneTypeMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/gemstone-types/:id - Get single gemstone type
 gemstoneTypeRoutes.get('/:id', authWithPermission(PERMISSIONS.GEMSTONE_TYPE.READ), async (c) => {
   try {
@@ -84,6 +99,17 @@ gemstoneTypeRoutes.put('/:id', authWithPermission(PERMISSIONS.GEMSTONE_TYPE.UPDA
     const data = updateGemstoneTypeSchema.parse(body)
     const result = await gemstoneTypeService.update(id, data)
     return successResponse<GemstoneType>(c, gemstoneTypeMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/gemstone-types/:id - Delete gemstone type
+gemstoneTypeRoutes.delete('/:id', authWithPermission(PERMISSIONS.GEMSTONE_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await gemstoneTypeService.delete(id)
+    return successResponse(c, gemstoneTypeMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }

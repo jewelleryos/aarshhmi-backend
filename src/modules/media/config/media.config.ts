@@ -7,9 +7,9 @@ export const mediaConfig = {
       mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'],
     },
     video: {
-      extensions: ['.mp4', '.webm', '.mov'],
+      extensions: ['.mp4'],
       maxSize: 100 * 1024 * 1024, // 100MB
-      mimeTypes: ['video/mp4', 'video/webm', 'video/quicktime'],
+      mimeTypes: ['video/mp4'],
     },
   },
 
