@@ -6,6 +6,9 @@ export const diamondClarityColorMessages = {
   UPDATED: 'Diamond clarity/color updated successfully',
   DELETED: 'Diamond clarity/color deleted successfully',
 
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Diamond clarity/color has dependencies',
+
   // Errors
   NOT_FOUND: 'Diamond clarity/color not found',
   SLUG_EXISTS: 'A diamond clarity/color with this slug already exists',

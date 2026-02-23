@@ -3,40 +3,33 @@ import { metalColorMessages } from '../config/metal-color.messages'
 import { AppError } from '../../../utils/app-error'
 import { HTTP_STATUS } from '../../../config/constants'
 import { SYSTEM_TAG_GROUPS } from '../../../config/tag.config'
+import { getProductDependenciesByOptionValue } from '../../../utils/dependency-check'
 import type {
   MetalColor,
-  MetalColorWithMetalType,
   CreateMetalColorRequest,
   UpdateMetalColorRequest,
   MetalColorListResponse,
 } from '../types/metal-color.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const metalColorService = {
-  // List all metal colors with metal type name
+  // List all metal colors
   async list(): Promise<MetalColorListResponse> {
     const result = await db.query(
-      `SELECT
-        mc.id, mc.metal_type_id, mc.name, mc.slug, mc.description,
-        mc.image_url, mc.image_alt_text, mc.status, mc.created_at, mc.updated_at,
-        mt.name as metal_type_name
-       FROM metal_colors mc
-       JOIN metal_types mt ON mc.metal_type_id = mt.id
-       ORDER BY mc.created_at DESC`
+      `SELECT id, name, slug, description, image_url, image_alt_text, status, created_at, updated_at
+       FROM metal_colors
+       ORDER BY created_at DESC`
     )
 
     return { items: result.rows }
   },
 
   // Get single metal color by ID
-  async getById(id: string): Promise<MetalColorWithMetalType> {
+  async getById(id: string): Promise<MetalColor> {
     const result = await db.query(
-      `SELECT
-        mc.id, mc.metal_type_id, mc.name, mc.slug, mc.description,
-        mc.image_url, mc.image_alt_text, mc.status, mc.created_at, mc.updated_at,
-        mt.name as metal_type_name
-       FROM metal_colors mc
-       JOIN metal_types mt ON mc.metal_type_id = mt.id
-       WHERE mc.id = $1`,
+      `SELECT id, name, slug, description, image_url, image_alt_text, status, created_at, updated_at
+       FROM metal_colors
+       WHERE id = $1`,
       [id]
     )
 
@@ -48,17 +41,7 @@ export const metalColorService = {
   },
 
   // Create metal color
-  async create(data: CreateMetalColorRequest): Promise<MetalColorWithMetalType> {
-    // Validate metal_type_id exists
-    const metalType = await db.query(
-      `SELECT id FROM metal_types WHERE id = $1`,
-      [data.metal_type_id]
-    )
-
-    if (metalType.rows.length === 0) {
-      throw new AppError(metalColorMessages.METAL_TYPE_NOT_FOUND, HTTP_STATUS.BAD_REQUEST)
-    }
-
+  async create(data: CreateMetalColorRequest): Promise<MetalColor> {
     // Check if slug already exists
     const existingSlug = await db.query(
       `SELECT id FROM metal_colors WHERE slug = $1`,
@@ -70,11 +53,10 @@ export const metalColorService = {
     }
 
     const result = await db.query(
-      `INSERT INTO metal_colors (metal_type_id, name, slug, description, image_url, image_alt_text, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, metal_type_id, name, slug, description, image_url, image_alt_text, status, created_at, updated_at`,
+      `INSERT INTO metal_colors (name, slug, description, image_url, image_alt_text, status)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, name, slug, description, image_url, image_alt_text, status, created_at, updated_at`,
       [
-        data.metal_type_id,
         data.name,
         data.slug,
         data.description || null,
@@ -93,12 +75,11 @@ export const metalColorService = {
       [SYSTEM_TAG_GROUPS.METAL_COLOR, metalColor.name, metalColor.slug, metalColor.id]
     )
 
-    // Fetch with metal type name
     return this.getById(metalColor.id)
   },
 
-  // Update metal color (metal_type_id NOT updatable)
-  async update(id: string, data: UpdateMetalColorRequest): Promise<MetalColorWithMetalType> {
+  // Update metal color
+  async update(id: string, data: UpdateMetalColorRequest): Promise<MetalColor> {
     // Check if metal color exists
     const existing = await db.query(
       `SELECT id FROM metal_colors WHERE id = $1`,
@@ -173,12 +154,45 @@ export const metalColorService = {
       )
     }
 
-    // Fetch with metal type name
     return this.getById(id)
   },
 
-  // Delete metal color (for future use)
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const products = await getProductDependenciesByOptionValue('metal_color', id)
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete metal color (with server-side dependency safety check)
   async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      throw new AppError(
+        `Cannot delete. Used by: ${check.dependencies[0].count} product(s)`,
+        HTTP_STATUS.CONFLICT
+      )
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    // Delete the metal color
     const result = await db.query(
       `DELETE FROM metal_colors WHERE id = $1 RETURNING id`,
       [id]
@@ -189,10 +203,10 @@ export const metalColorService = {
     }
   },
 
-  // Get metal colors for product dropdown (with slug and metal_type_id for filtering)
-  async getForProduct(): Promise<{ id: string; metal_type_id: string; name: string; slug: string }[]> {
+  // Get metal colors for product dropdown
+  async getForProduct(): Promise<{ id: string; name: string; slug: string }[]> {
     const result = await db.query(
-      `SELECT id, metal_type_id, name, slug FROM metal_colors WHERE status = true ORDER BY name`
+      `SELECT id, name, slug FROM metal_colors WHERE status = true ORDER BY name`
     )
     return result.rows
   },

@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { GemstoneQuality, GemstoneQualityListResponse } from '../types/gemstone-quality.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const gemstoneQualityRoutes = new Hono<AppEnv>()
 
@@ -53,6 +54,20 @@ gemstoneQualityRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PR
   }
 })
 
+// GET /api/gemstone-qualities/:id/check-dependency - Check dependencies before deletion
+gemstoneQualityRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.GEMSTONE_QUALITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await gemstoneQualityService.checkDependencies(id)
+    const message = result.can_delete
+      ? gemstoneQualityMessages.NO_DEPENDENCIES
+      : gemstoneQualityMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/gemstone-qualities/:id - Get single gemstone quality
 gemstoneQualityRoutes.get('/:id', authWithPermission(PERMISSIONS.GEMSTONE_QUALITY.READ), async (c) => {
   try {
@@ -84,6 +99,17 @@ gemstoneQualityRoutes.put('/:id', authWithPermission(PERMISSIONS.GEMSTONE_QUALIT
     const data = updateGemstoneQualitySchema.parse(body)
     const result = await gemstoneQualityService.update(id, data)
     return successResponse<GemstoneQuality>(c, gemstoneQualityMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/gemstone-qualities/:id - Delete gemstone quality
+gemstoneQualityRoutes.delete('/:id', authWithPermission(PERMISSIONS.GEMSTONE_QUALITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await gemstoneQualityService.delete(id)
+    return successResponse(c, gemstoneQualityMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }

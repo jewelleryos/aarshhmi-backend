@@ -3,12 +3,14 @@ import { metalTypeMessages } from '../config/metal-type.messages'
 import { AppError } from '../../../utils/app-error'
 import { HTTP_STATUS } from '../../../config/constants'
 import { SYSTEM_TAG_GROUPS } from '../../../config/tag.config'
+import { getProductDependenciesByOptionValue } from '../../../utils/dependency-check'
 import type {
   MetalType,
   CreateMetalTypeRequest,
   UpdateMetalTypeRequest,
   MetalTypeListResponse,
 } from '../types/metal-type.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const metalTypeService = {
   // List all metal types
@@ -157,8 +159,64 @@ export const metalTypeService = {
     return metalType
   },
 
-  // Delete metal type (for future use)
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    // Verify metal type exists
+    await this.getById(id)
+
+    // Run all dependency queries in parallel
+    // Note: metal_colors no longer has metal_type_id (colors are global), so no color dependency check
+    const [products, metalPurities, makingCharges] = await Promise.all([
+      getProductDependenciesByOptionValue('metal_type', id),
+      db.query(
+        `SELECT id, name FROM metal_purities WHERE metal_type_id = $1 ORDER BY name`,
+        [id]
+      ).then(r => r.rows),
+      db.query(
+        `SELECT id, CONCAT("from", 'g - ', "to", 'g') AS name FROM making_charges WHERE metal_type_id = $1 ORDER BY "from"`,
+        [id]
+      ).then(r => r.rows),
+    ])
+
+    // Build dependency groups (only include non-empty ones)
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+    if (metalPurities.length > 0) {
+      dependencies.push({ type: 'metal_purity', count: metalPurities.length, items: metalPurities })
+    }
+    if (makingCharges.length > 0) {
+      dependencies.push({ type: 'making_charge', count: makingCharges.length, items: makingCharges })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete metal type (with dependency safety check)
   async delete(id: string): Promise<void> {
+    // Server-side safety — always check dependencies before deleting
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const parts = check.dependencies.map(d => `${d.count} ${d.type.replace(/_/g, ' ')}(s)`)
+      throw new AppError(
+        `Cannot delete. Used by: ${parts.join(', ')}`,
+        HTTP_STATUS.CONFLICT
+      )
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    // Delete the metal type
     const result = await db.query(
       `DELETE FROM metal_types WHERE id = $1 RETURNING id`,
       [id]

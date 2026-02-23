@@ -65,25 +65,20 @@ class JewelleryDefaultService {
       }
       // ======================== //
       // Validate metal data
+
+      // Validate global colors
+      for (const color of data.metal.colors) {
+        const metalColor = masterData.metalColors.find(c => c.id === color.colorId)
+        if (!metalColor) {
+          throw new AppError(`Invalid metal color ID: ${color.colorId}`, 400)
+        }
+      }
+
       for (const selectedMetal of data.metal.selectedMetals) {
         // Validate metal type exists
         const metalType = masterData.metalTypes.find(m => m.id === selectedMetal.metalTypeId)
         if (!metalType) {
           throw new AppError(`Invalid metal type ID: ${selectedMetal.metalTypeId}`, 400)
-        }
-
-        // Validate colors exist and belong to this metal type
-        for (const color of selectedMetal.colors) {
-          const metalColor = masterData.metalColors.find(c => c.id === color.colorId)
-          if (!metalColor) {
-            throw new AppError(`Invalid metal color ID: ${color.colorId}`, 400)
-          }
-          if (metalColor.metal_type_id !== selectedMetal.metalTypeId) {
-            throw new AppError(
-              `Metal color ${color.colorId} does not belong to metal type ${selectedMetal.metalTypeId}`,
-              400
-            )
-          }
         }
 
         // Validate purities exist and belong to this metal type
@@ -101,8 +96,11 @@ class JewelleryDefaultService {
         }
       }
 
-      // Store metal data directly
-      finalProductData.availableMetals = data.metal.selectedMetals
+      // Store metal data
+      finalProductData.availableMetals = {
+        colors: data.metal.colors,
+        metals: data.metal.selectedMetals,
+      }
 
       // ======================== //
       // Validate stone data
@@ -522,12 +520,12 @@ class JewelleryDefaultService {
       // Collect all source IDs for system-generated tags
       const sourceIds: string[] = []
 
-      // Metal IDs (types, colors, purities)
+      // Metal IDs (global colors, types, purities)
+      for (const color of data.metal.colors) {
+        sourceIds.push(color.colorId)
+      }
       for (const selectedMetal of data.metal.selectedMetals) {
         sourceIds.push(selectedMetal.metalTypeId)
-        for (const color of selectedMetal.colors) {
-          sourceIds.push(color.colorId)
-        }
         for (const purity of selectedMetal.purities) {
           sourceIds.push(purity.purityId)
         }
@@ -689,12 +687,14 @@ class JewelleryDefaultService {
       const optionValueMap: Record<string, string> = {}
       const optionValuesToInsert: { optionId: string; value: string }[] = []
 
-      // From selectedMetals - metal types, colors, purities
+      // Global metal colors
+      for (const color of data.metal.colors) {
+        optionValuesToInsert.push({ optionId: optionIds['metal_color'], value: color.colorId })
+      }
+
+      // From selectedMetals - metal types, purities
       for (const metal of data.metal.selectedMetals) {
         optionValuesToInsert.push({ optionId: optionIds['metal_type'], value: metal.metalTypeId })
-        for (const color of metal.colors) {
-          optionValuesToInsert.push({ optionId: optionIds['metal_color'], value: color.colorId })
-        }
         for (const purity of metal.purities) {
           optionValuesToInsert.push({ optionId: optionIds['metal_purity'], value: purity.purityId })
         }
@@ -1254,23 +1254,19 @@ class JewelleryDefaultService {
       const masterData = await this.fetchMasterData()
 
       // 4. Validate metal data (same as create)
+
+      // Validate global colors
+      for (const color of data.metal.colors) {
+        const metalColor = masterData.metalColors.find(c => c.id === color.colorId)
+        if (!metalColor) {
+          throw new AppError(`Invalid metal color ID: ${color.colorId}`, 400)
+        }
+      }
+
       for (const selectedMetal of data.metal.selectedMetals) {
         const metalType = masterData.metalTypes.find(m => m.id === selectedMetal.metalTypeId)
         if (!metalType) {
           throw new AppError(`Invalid metal type ID: ${selectedMetal.metalTypeId}`, 400)
-        }
-
-        for (const color of selectedMetal.colors) {
-          const metalColor = masterData.metalColors.find(c => c.id === color.colorId)
-          if (!metalColor) {
-            throw new AppError(`Invalid metal color ID: ${color.colorId}`, 400)
-          }
-          if (metalColor.metal_type_id !== selectedMetal.metalTypeId) {
-            throw new AppError(
-              `Metal color ${color.colorId} does not belong to metal type ${selectedMetal.metalTypeId}`,
-              400
-            )
-          }
         }
 
         for (const purity of selectedMetal.purities) {
@@ -1387,11 +1383,11 @@ class JewelleryDefaultService {
       // 9. Collect system tag IDs
       const sourceIds: string[] = []
 
+      for (const color of data.metal.colors) {
+        sourceIds.push(color.colorId)
+      }
       for (const selectedMetal of data.metal.selectedMetals) {
         sourceIds.push(selectedMetal.metalTypeId)
-        for (const color of selectedMetal.colors) {
-          sourceIds.push(color.colorId)
-        }
         for (const purity of selectedMetal.purities) {
           sourceIds.push(purity.purityId)
         }
@@ -1523,11 +1519,13 @@ class JewelleryDefaultService {
       const optionValueMap: Record<string, string> = {}
       const optionValuesToInsert: { optionId: string; value: string }[] = []
 
+      // Global metal colors
+      for (const color of data.metal.colors) {
+        optionValuesToInsert.push({ optionId: optionIds['metal_color'], value: color.colorId })
+      }
+
       for (const metal of data.metal.selectedMetals) {
         optionValuesToInsert.push({ optionId: optionIds['metal_type'], value: metal.metalTypeId })
-        for (const color of metal.colors) {
-          optionValuesToInsert.push({ optionId: optionIds['metal_color'], value: color.colorId })
-        }
         for (const purity of metal.purities) {
           optionValuesToInsert.push({ optionId: optionIds['metal_purity'], value: purity.purityId })
         }
@@ -1689,7 +1687,10 @@ class JewelleryDefaultService {
       // Build updated metadata
       const updatedMetadata = {
         ...existingMetadata,
-        availableMetals: data.metal.selectedMetals,
+        availableMetals: {
+          colors: data.metal.colors,
+          metals: data.metal.selectedMetals,
+        },
         stone: data.stone,
         stoneWeights,
         optionConfig,
@@ -2104,9 +2105,9 @@ class JewelleryDefaultService {
         ? stone.gemstone.colors.map((c) => c.id)
         : [null]
 
-    // Generate all combinations
-    for (const selectedMetal of metal.selectedMetals) {
-      for (const color of selectedMetal.colors) {
+    // Generate all combinations (colors are global, shared across all metal types)
+    for (const color of metal.colors) {
+      for (const selectedMetal of metal.selectedMetals) {
         for (const purity of selectedMetal.purities) {
           // Skip if weight is invalid (should not happen after schema validation)
           if (!purity.weight || purity.weight <= 0) continue
@@ -2266,11 +2267,13 @@ class JewelleryDefaultService {
     const metalColorIds = new Set<string>()
     const metalPurityIds = new Set<string>()
 
+    // Global colors
+    for (const color of data.metal.colors) {
+      metalColorIds.add(color.colorId)
+    }
+
     for (const metal of data.metal.selectedMetals) {
       metalTypeIds.add(metal.metalTypeId)
-      for (const color of metal.colors) {
-        metalColorIds.add(color.colorId)
-      }
       for (const purity of metal.purities) {
         metalPurityIds.add(purity.purityId)
       }
@@ -2300,7 +2303,6 @@ class JewelleryDefaultService {
           id: mc.id,
           name: mc.name,
           slug: mc.slug,
-          metalTypeId: mc.metal_type_id,
           imageUrl: mc.image_url,
           imageAltText: mc.image_alt_text,
         })
@@ -2680,7 +2682,7 @@ class JewelleryDefaultService {
       pricingRulesResult,
     ] = await Promise.all([
       db.query<MasterMetalType>('SELECT id, name, slug, image_url, image_alt_text FROM metal_types WHERE status = true'),
-      db.query<MasterMetalColor>('SELECT id, name, slug, metal_type_id, image_url, image_alt_text FROM metal_colors WHERE status = true'),
+      db.query<MasterMetalColor>('SELECT id, name, slug, image_url, image_alt_text FROM metal_colors WHERE status = true'),
       db.query<MasterMetalPurity>('SELECT id, name, slug, metal_type_id, price, image_url, image_alt_text FROM metal_purities WHERE status = true'),
       db.query<MasterStoneShape>('SELECT id, name, slug FROM stone_shapes WHERE status = true'),
       db.query<MasterDiamondClarityColor>(`
@@ -2781,7 +2783,6 @@ interface MasterMetalColor {
   id: string
   name: string
   slug: string
-  metal_type_id: string
   image_url: string | null
   image_alt_text: string | null
 }
@@ -2975,7 +2976,6 @@ interface OptionConfigMetalColor {
   id: string
   name: string
   slug: string
-  metalTypeId: string
   imageUrl: string | null
   imageAltText: string | null
 }

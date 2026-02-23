@@ -6,6 +6,10 @@ export const metalTypeMessages = {
   UPDATED: 'Metal type updated successfully',
   DELETED: 'Metal type deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found. Metal type can be deleted.',
+  HAS_DEPENDENCIES: 'Metal type is in use and cannot be deleted.',
+
   // Errors
   NOT_FOUND: 'Metal type not found',
   SLUG_EXISTS: 'A metal type with this slug already exists',

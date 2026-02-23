@@ -99,7 +99,6 @@ const metalPuritySchema = z.object({
  */
 const selectedMetalSchema = z.object({
   metalTypeId: z.string().min(1, 'Metal type ID is required'),
-  colors: z.array(metalColorSchema).min(1, 'At least one color must be selected'),
   purities: z.array(metalPuritySchema).min(1, 'At least one purity must be selected'),
 })
 
@@ -107,6 +106,7 @@ const selectedMetalSchema = z.object({
  * Metal details schema
  */
 const metalDetailsSchema = z.object({
+  colors: z.array(metalColorSchema).min(1, 'At least one color must be selected'),
   selectedMetals: z.array(selectedMetalSchema).min(1, 'At least one metal must be selected'),
 })
 

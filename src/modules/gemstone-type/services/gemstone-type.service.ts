@@ -10,6 +10,7 @@ import type {
   UpdateGemstoneTypeRequest,
   GemstoneTypeListResponse,
 } from '../types/gemstone-type.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const gemstoneTypeService = {
   // List all gemstone types (filtered by GEMSTONE stone_group_id)
@@ -173,6 +174,77 @@ export const gemstoneTypeService = {
     }
 
     return this.getById(id)
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const [products, gemstonePrices] = await Promise.all([
+      // Tag-based query — gemstone types have system tags linked to products via product_tags
+      db.query(
+        `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+         FROM products p
+         JOIN product_tags pt ON pt.product_id = p.id
+         JOIN tags t ON t.id = pt.tag_id
+         WHERE t.source_id = $1 AND t.is_system_generated = TRUE
+           AND p.status != 'archived'
+         ORDER BY p.name`,
+        [id]
+      ).then(r => r.rows),
+
+      // Hard FK — stone_prices.stone_type_id
+      db.query(
+        `SELECT sp.id, CONCAT(st.name, ' - ', ss.name, ' - ', sc.name, ' (', sp.ct_from, '-', sp.ct_to, ' ct)') AS name
+         FROM stone_prices sp
+         JOIN stone_types st ON sp.stone_type_id = st.id
+         JOIN stone_shapes ss ON sp.stone_shape_id = ss.id
+         LEFT JOIN stone_colors sc ON sp.stone_color_id = sc.id
+         WHERE sp.stone_type_id = $1
+         ORDER BY ss.name, sp.ct_from`,
+        [id]
+      ).then(r => r.rows),
+    ])
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+
+    if (gemstonePrices.length > 0) {
+      dependencies.push({ type: 'gemstone_price', count: gemstonePrices.length, items: gemstonePrices })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete gemstone type (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    const result = await db.query(
+      `DELETE FROM stone_types WHERE id = $1 AND stone_group_id = $2 RETURNING id`,
+      [id, STONE_GROUPS.GEMSTONE]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(gemstoneTypeMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 
   // Get gemstone types for product dropdown (with slug)
