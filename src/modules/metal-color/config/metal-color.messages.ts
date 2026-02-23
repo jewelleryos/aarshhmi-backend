@@ -14,6 +14,4 @@ export const metalColorMessages = {
   SLUG_EXISTS: 'A metal color with this slug already exists',
   NAME_REQUIRED: 'Name is required',
   INVALID_ID: 'Invalid metal color ID',
-  METAL_TYPE_NOT_FOUND: 'Metal type not found',
-  METAL_TYPE_REQUIRED: 'Metal type is required',
 }

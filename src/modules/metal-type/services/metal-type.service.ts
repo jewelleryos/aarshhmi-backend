@@ -165,12 +165,9 @@ export const metalTypeService = {
     await this.getById(id)
 
     // Run all dependency queries in parallel
-    const [products, metalColors, metalPurities, makingCharges] = await Promise.all([
+    // Note: metal_colors no longer has metal_type_id (colors are global), so no color dependency check
+    const [products, metalPurities, makingCharges] = await Promise.all([
       getProductDependenciesByOptionValue('metal_type', id),
-      db.query(
-        `SELECT id, name FROM metal_colors WHERE metal_type_id = $1 ORDER BY name`,
-        [id]
-      ).then(r => r.rows),
       db.query(
         `SELECT id, name FROM metal_purities WHERE metal_type_id = $1 ORDER BY name`,
         [id]
@@ -187,9 +184,6 @@ export const metalTypeService = {
     if (products.length > 0) {
       dependencies.push({ type: 'product', count: products.length, items: products })
     }
-    if (metalColors.length > 0) {
-      dependencies.push({ type: 'metal_color', count: metalColors.length, items: metalColors })
-    }
     if (metalPurities.length > 0) {
       dependencies.push({ type: 'metal_purity', count: metalPurities.length, items: metalPurities })
     }
@@ -205,7 +199,7 @@ export const metalTypeService = {
 
   // Delete metal type (with dependency safety check)
   async delete(id: string): Promise<void> {
-        // Server-side safety — always check dependencies before deleting
+    // Server-side safety — always check dependencies before deleting
     const check = await this.checkDependencies(id)
 
     if (!check.can_delete) {

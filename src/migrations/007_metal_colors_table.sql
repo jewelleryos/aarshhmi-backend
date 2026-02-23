@@ -1,11 +1,8 @@
 -- Table: metal_colors
--- Purpose: Stores colors for metal types used in jewellery products
+-- Purpose: Stores global colors for jewellery products (shared across all metal types)
 
 CREATE TABLE IF NOT EXISTS metal_colors (
     id TEXT PRIMARY KEY DEFAULT generate_ulid('mclr'),
-
-    -- Reference to metal type
-    metal_type_id TEXT NOT NULL REFERENCES metal_types(id) ON DELETE CASCADE,
 
     -- Metal color information
     name VARCHAR(100) NOT NULL,
@@ -26,7 +23,6 @@ CREATE TABLE IF NOT EXISTS metal_colors (
 );
 
 -- Indexes
-CREATE INDEX idx_metal_colors_metal_type_id ON metal_colors(metal_type_id);
 CREATE INDEX idx_metal_colors_slug ON metal_colors(slug);
 CREATE INDEX idx_metal_colors_status ON metal_colors(status) WHERE status = TRUE;
 

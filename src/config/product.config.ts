@@ -29,9 +29,9 @@ export const PRODUCT_TYPES = {
     variantSkuConfig: {
       components: [
         { key: 'productSku', separator: '' },
-        { key: 'metalType', separator: '-' },
-        { key: 'metalColor', separator: '-' },
-        { key: 'metalPurity', separator: '-' },
+        { key: 'metalPurity', separator: '_' },
+        { key: 'metalColor', separator: '' },
+        { key: 'metalType', separator: '' },
         { key: 'diamondClarityColor', separator: '-' },
         { key: 'gemstoneColor', separator: '-' },
       ] as VariantSkuComponent[]
