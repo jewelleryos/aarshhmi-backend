@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { SizeChartGroup, SizeChartGroupListResponse } from '../types/size-chart-groups.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const sizeChartGroupRoutes = new Hono<AppEnv>()
 
@@ -59,6 +60,20 @@ sizeChartGroupRoutes.get('/', authWithPermission(PERMISSIONS.SIZE_CHART_GROUP.RE
   }
 })
 
+// GET /api/size-chart-groups/:id/check-dependency - Check dependencies before deletion
+sizeChartGroupRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.SIZE_CHART_GROUP.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await sizeChartGroupService.checkDependencies(id)
+    const message = result.can_delete
+      ? sizeChartGroupMessages.NO_DEPENDENCIES
+      : sizeChartGroupMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/size-chart-groups/:id - Get single size chart group
 sizeChartGroupRoutes.get('/:id', authWithPermission(PERMISSIONS.SIZE_CHART_GROUP.READ), async (c) => {
   try {
@@ -95,4 +110,13 @@ sizeChartGroupRoutes.put('/:id', authWithPermission(PERMISSIONS.SIZE_CHART_GROUP
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/size-chart-groups/:id - Delete size chart group
+sizeChartGroupRoutes.delete('/:id', authWithPermission(PERMISSIONS.SIZE_CHART_GROUP.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await sizeChartGroupService.delete(id)
+    return successResponse(c, sizeChartGroupMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
