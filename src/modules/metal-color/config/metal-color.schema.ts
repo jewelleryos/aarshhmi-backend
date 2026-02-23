@@ -11,7 +11,6 @@ const generateSlug = (name: string): string => {
 }
 
 export const createMetalColorSchema = z.object({
-  metal_type_id: z.string().min(1, 'Metal type is required'),
   name: z.string().min(1, 'Name is required').max(100, 'Name must be 100 characters or less'),
   slug: z
     .string()
@@ -43,7 +42,6 @@ export const updateMetalColorSchema = z.object({
   image_url: z.string().nullable().optional(),
   image_alt_text: z.string().max(255, 'Alt text must be 255 characters or less').nullable().optional(),
   status: z.boolean().optional(),
-  // NOTE: metal_type_id is NOT included - cannot be updated
 })
 
 export const metalColorIdSchema = z.object({

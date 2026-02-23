@@ -9,6 +9,7 @@ import { PERMISSIONS } from '../../../config/permissions.constants'
 import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { MetalPurityWithMetalType, MetalPurityListResponse } from '../types/metal-purity.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const metalPurityRoutes = new Hono<AppEnv>()
 
@@ -94,4 +95,25 @@ metalPurityRoutes.put('/:id', authWithPermission(PERMISSIONS.METAL_PURITY.UPDATE
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// GET /api/metal-purities/:id/check-dependency - Check dependencies before deletion
+metalPurityRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.METAL_PURITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await metalPurityService.checkDependencies(id)
+    const message = result.can_delete ? metalPurityMessages.NO_DEPENDENCIES : metalPurityMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/metal-purities/:id - Delete metal purity
+metalPurityRoutes.delete('/:id', authWithPermission(PERMISSIONS.METAL_PURITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await metalPurityService.delete(id)
+    return successResponse(c, metalPurityMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

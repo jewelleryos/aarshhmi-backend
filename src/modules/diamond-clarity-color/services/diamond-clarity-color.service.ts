@@ -4,12 +4,14 @@ import { SYSTEM_TAG_GROUPS } from '../../../config/tag.config'
 import { diamondClarityColorMessages } from '../config/diamond-clarity-color.messages'
 import { AppError } from '../../../utils/app-error'
 import { HTTP_STATUS } from '../../../config/constants'
+import { getProductDependenciesByOptionValue } from '../../../utils/dependency-check'
 import type {
   DiamondClarityColor,
   CreateDiamondClarityColorRequest,
   UpdateDiamondClarityColorRequest,
   DiamondClarityColorListResponse,
 } from '../types/diamond-clarity-color.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const diamondClarityColorService = {
   // List all diamond clarity/colors (filtered by DIAMOND stone_group_id)
@@ -159,6 +161,66 @@ export const diamondClarityColorService = {
     }
 
     return this.getById(id)
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const [products, diamondPrices] = await Promise.all([
+      getProductDependenciesByOptionValue('diamond_clarity_color', id),
+      db.query(
+        `SELECT sp.id, CONCAT(ss.name, ' - ', sp.ct_from, ' to ', sp.ct_to, ' ct') AS name
+         FROM stone_prices sp
+         JOIN stone_shapes ss ON sp.stone_shape_id = ss.id
+         WHERE sp.stone_quality_id = $1
+         ORDER BY ss.name`,
+        [id]
+      ).then(r => r.rows),
+    ])
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+    if (diamondPrices.length > 0) {
+      dependencies.push({ type: 'diamond_price', count: diamondPrices.length, items: diamondPrices })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete diamond clarity color (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const parts = check.dependencies.map(d => `${d.count} ${d.type.replace(/_/g, ' ')}(s)`)
+      throw new AppError(
+        `Cannot delete. Used by: ${parts.join(', ')}`,
+        HTTP_STATUS.CONFLICT
+      )
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    // Delete the diamond clarity color (stone_qualities row)
+    const result = await db.query(
+      `DELETE FROM stone_qualities WHERE id = $1 AND stone_group_id = $2 RETURNING id`,
+      [id, STONE_GROUPS.DIAMOND]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(diamondClarityColorMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 
   // Get diamond clarity colors for product dropdown (with slug)
