@@ -12,4 +12,6 @@ export const badgeMessages = {
   FONT_COLOR_REQUIRED: 'Font color is required',
   INVALID_POSITION: 'Position must be between 1 and 6',
   INVALID_ID: 'Invalid badge ID',
+  NO_DEPENDENCIES: 'No dependencies found. Badge can be deleted.',
+  HAS_DEPENDENCIES: 'Badge is in use and cannot be deleted.',
 }
