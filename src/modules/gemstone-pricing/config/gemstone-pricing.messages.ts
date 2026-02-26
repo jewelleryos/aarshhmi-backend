@@ -6,6 +6,10 @@ export const gemstonePricingMessages = {
   UPDATED: 'Gemstone price updated successfully',
   DELETED: 'Gemstone price deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Gemstone pricing has dependencies',
+
   // Errors
   NOT_FOUND: 'Gemstone price not found',
   DUPLICATE_ENTRY: 'A price entry with this combination already exists',

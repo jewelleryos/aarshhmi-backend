@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { GemstoneColor, GemstoneColorListResponse } from '../types/gemstone-color.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const gemstoneColorRoutes = new Hono<AppEnv>()
 
@@ -53,6 +54,20 @@ gemstoneColorRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PROD
   }
 })
 
+// GET /api/gemstone-colors/:id/check-dependency - Check dependencies before deletion
+gemstoneColorRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.GEMSTONE_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await gemstoneColorService.checkDependencies(id)
+    const message = result.can_delete
+      ? gemstoneColorMessages.NO_DEPENDENCIES
+      : gemstoneColorMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/gemstone-colors/:id - Get single gemstone color
 gemstoneColorRoutes.get('/:id', authWithPermission(PERMISSIONS.GEMSTONE_COLOR.READ), async (c) => {
   try {
@@ -84,6 +99,17 @@ gemstoneColorRoutes.put('/:id', authWithPermission(PERMISSIONS.GEMSTONE_COLOR.UP
     const data = updateGemstoneColorSchema.parse(body)
     const result = await gemstoneColorService.update(id, data)
     return successResponse<GemstoneColor>(c, gemstoneColorMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/gemstone-colors/:id - Delete gemstone color
+gemstoneColorRoutes.delete('/:id', authWithPermission(PERMISSIONS.GEMSTONE_COLOR.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await gemstoneColorService.delete(id)
+    return successResponse(c, gemstoneColorMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }

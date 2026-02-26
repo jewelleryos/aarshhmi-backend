@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { Badge, BadgeListResponse } from '../types/badges.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const badgeRoutes = new Hono<AppEnv>()
 
@@ -55,6 +56,18 @@ badgeRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.UPDA
   }
 })
 
+// GET /api/badges/:id/check-dependency - Check dependencies before delete
+badgeRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.BADGE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await badgeService.checkDependencies(id)
+    const message = result.can_delete ? badgeMessages.NO_DEPENDENCIES : badgeMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/badges/:id - Get single badge
 badgeRoutes.get('/:id', authWithPermission(PERMISSIONS.BADGE.READ), async (c) => {
   try {
@@ -91,4 +104,13 @@ badgeRoutes.put('/:id', authWithPermission(PERMISSIONS.BADGE.UPDATE), async (c) 
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/badges/:id - Delete badge
+badgeRoutes.delete('/:id', authWithPermission(PERMISSIONS.BADGE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await badgeService.delete(id)
+    return successResponse(c, badgeMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

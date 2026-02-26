@@ -12,4 +12,6 @@ export const tagMessages = {
   GROUP_ID_REQUIRED: 'Tag group ID is required',
   INVALID_ID: 'Invalid tag ID',
   SYSTEM_GENERATED_ERROR: 'System-generated tags cannot be modified',
+  NO_DEPENDENCIES: 'No dependencies found. Tag can be deleted.',
+  HAS_DEPENDENCIES: 'Tag is in use and cannot be deleted.',
 }
