@@ -4,6 +4,11 @@ export const sizeChartGroupMessages = {
   CREATED: 'Size chart group created successfully',
   UPDATED: 'Size chart group updated successfully',
   DELETED: 'Size chart group deleted successfully',
+
+  // Dependencies
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Size chart group has dependencies',
+
   NOT_FOUND: 'Size chart group not found',
   NAME_REQUIRED: 'Name is required',
   VALUE_NAME_REQUIRED: 'Value name is required',

@@ -12,6 +12,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { TagWithGroup, TagListResponse } from '../types/tags.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const tagRoutes = new Hono<AppEnv>()
 
@@ -57,6 +58,18 @@ tagRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.UPDATE
   try {
     const result = await tagService.getForProduct()
     return successResponse(c, 'Tags fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/tags/:id/check-dependency - Check dependencies before delete
+tagRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.TAG.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await tagService.checkDependencies(id)
+    const message = result.can_delete ? tagMessages.NO_DEPENDENCIES : tagMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
   } catch (error) {
     return errorHandler(error, c)
   }
@@ -111,4 +124,13 @@ tagRoutes.put('/:id/seo', authWithPermission(PERMISSIONS.TAG.UPDATE), async (c) 
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/tags/:id - Delete tag
+tagRoutes.delete('/:id', authWithPermission(PERMISSIONS.TAG.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await tagService.delete(id)
+    return successResponse(c, tagMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

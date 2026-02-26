@@ -6,6 +6,10 @@ export const gemstoneColorMessages = {
   UPDATED: 'Gemstone color updated successfully',
   DELETED: 'Gemstone color deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Gemstone color has dependencies',
+
   // Errors
   NOT_FOUND: 'Gemstone color not found',
   SLUG_EXISTS: 'A gemstone color with this slug already exists',

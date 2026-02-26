@@ -13,4 +13,6 @@ export const categoryMessages = {
   CIRCULAR_REFERENCE: 'Cannot set a child category as parent (circular reference)',
   MAX_DEPTH_EXCEEDED: 'Maximum hierarchy depth exceeded (only one level allowed)',
   CANNOT_SET_SELF_AS_PARENT: 'Cannot set a category as its own parent',
+  NO_DEPENDENCIES: 'No dependencies found. Category can be deleted.',
+  HAS_DEPENDENCIES: 'Category is in use and cannot be deleted.',
 }

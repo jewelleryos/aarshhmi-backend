@@ -11,6 +11,7 @@ import type {
   CategoryListResponse,
   CategoryFlatListResponse,
 } from '../types/categories.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const categoryService = {
   // List all categories as hierarchical tree (root categories with children nested)
@@ -333,19 +334,47 @@ export const categoryService = {
     return result.rows
   },
 
-  // Delete category (for future use)
-  async delete(id: string): Promise<void> {
-    // Check if category exists
-    const existing = await db.query(
-      `SELECT id FROM categories WHERE id = $1`,
-      [id]
-    )
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
 
-    if (existing.rows.length === 0) {
-      throw new AppError(categoryMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    const [products, childCategories] = await Promise.all([
+      db.query(
+        `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+         FROM products p
+         JOIN product_categories pc ON pc.product_id = p.id
+         WHERE pc.category_id = $1 AND p.status != 'archived'
+         ORDER BY p.name`,
+        [id]
+      ).then(r => r.rows),
+      db.query(
+        `SELECT id, name FROM categories WHERE parent_category_id = $1 ORDER BY name`,
+        [id]
+      ).then(r => r.rows),
+    ])
+
+    const dependencies: DependencyGroup[] = []
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+    if (childCategories.length > 0) {
+      dependencies.push({ type: 'category', count: childCategories.length, items: childCategories })
     }
 
-    // ON DELETE CASCADE will handle children
-    await db.query(`DELETE FROM categories WHERE id = $1`, [id])
+    return { can_delete: dependencies.length === 0, dependencies }
+  },
+
+  // Delete category with dependency check
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    const result = await db.query(`DELETE FROM categories WHERE id = $1 RETURNING id`, [id])
+    if (result.rows.length === 0) {
+      throw new AppError(categoryMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 }

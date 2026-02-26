@@ -11,6 +11,7 @@ import type {
   TagListResponse,
   TagListQuery,
 } from '../types/tags.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const tagService = {
   // List all tags with optional group filter (excluding system-generated)
@@ -259,22 +260,42 @@ export const tagService = {
     return result.rows
   },
 
-  // Delete tag (for future use)
-  async delete(id: string): Promise<void> {
-    // Check if tag exists and is not system-generated
-    const existing = await db.query(
-      `SELECT id, is_system_generated FROM tags WHERE id = $1`,
-      [id]
-    )
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    const existing = await this.getById(id)
 
-    if (existing.rows.length === 0) {
-      throw new AppError(tagMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
-    }
-
-    if (existing.rows[0].is_system_generated) {
+    if (existing.is_system_generated) {
       throw new AppError(tagMessages.SYSTEM_GENERATED_ERROR, HTTP_STATUS.FORBIDDEN)
     }
 
-    await db.query(`DELETE FROM tags WHERE id = $1`, [id])
+    const result = await db.query(
+      `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+       FROM products p
+       JOIN product_tags pt ON pt.product_id = p.id
+       WHERE pt.tag_id = $1 AND p.status != 'archived'
+       ORDER BY p.name`,
+      [id]
+    )
+
+    const dependencies: DependencyGroup[] = []
+    if (result.rows.length > 0) {
+      dependencies.push({ type: 'product', count: result.rows.length, items: result.rows })
+    }
+
+    return { can_delete: dependencies.length === 0, dependencies }
+  },
+
+  // Delete tag with dependency check
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    const result = await db.query(`DELETE FROM tags WHERE id = $1 RETURNING id`, [id])
+    if (result.rows.length === 0) {
+      throw new AppError(tagMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 }

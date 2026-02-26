@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { PearlType, PearlTypeListResponse } from '../types/pearl-type.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const pearlTypeRoutes = new Hono<AppEnv>()
 
@@ -38,6 +39,20 @@ pearlTypeRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.
   try {
     const result = await pearlTypeService.getForProduct()
     return successResponse(c, 'Pearl types fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/pearl-types/:id/check-dependency - Check dependencies before deletion
+pearlTypeRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.PEARL_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await pearlTypeService.checkDependencies(id)
+    const message = result.can_delete
+      ? pearlTypeMessages.NO_DEPENDENCIES
+      : pearlTypeMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
   } catch (error) {
     return errorHandler(error, c)
   }
@@ -74,6 +89,17 @@ pearlTypeRoutes.put('/:id', authWithPermission(PERMISSIONS.PEARL_TYPE.UPDATE), a
     const data = updatePearlTypeSchema.parse(body)
     const result = await pearlTypeService.update(id, data)
     return successResponse<PearlType>(c, pearlTypeMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/pearl-types/:id - Delete pearl type
+pearlTypeRoutes.delete('/:id', authWithPermission(PERMISSIONS.PEARL_TYPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await pearlTypeService.delete(id)
+    return successResponse(c, pearlTypeMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }

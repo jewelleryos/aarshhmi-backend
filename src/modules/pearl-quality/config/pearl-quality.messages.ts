@@ -6,6 +6,10 @@ export const pearlQualityMessages = {
   UPDATED: 'Pearl quality updated successfully',
   DELETED: 'Pearl quality deleted successfully',
 
+  // Dependencies
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Pearl quality has dependencies',
+
   // Errors
   NOT_FOUND: 'Pearl quality not found',
   SLUG_EXISTS: 'A pearl quality with this slug already exists',

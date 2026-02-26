@@ -6,6 +6,10 @@ export const pearlTypeMessages = {
   UPDATED: 'Pearl type updated successfully',
   DELETED: 'Pearl type deleted successfully',
 
+  // Dependency check
+  NO_DEPENDENCIES: 'No dependencies found',
+  HAS_DEPENDENCIES: 'Pearl type has dependencies',
+
   // Errors
   NOT_FOUND: 'Pearl type not found',
   SLUG_EXISTS: 'A pearl type with this slug already exists',

@@ -8,6 +8,7 @@ import type {
   UpdateBadgeRequest,
   BadgeListResponse,
 } from '../types/badges.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const badgeService = {
   // List all badges
@@ -150,18 +151,38 @@ export const badgeService = {
     return result.rows
   },
 
-  // Delete badge (for future use)
-  async delete(id: string): Promise<void> {
-    // Check if badge exists
-    const existing = await db.query(
-      `SELECT id FROM badges WHERE id = $1`,
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const result = await db.query(
+      `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+       FROM products p
+       JOIN product_badges pb ON pb.product_id = p.id
+       WHERE pb.badge_id = $1 AND p.status != 'archived'
+       ORDER BY p.name`,
       [id]
     )
 
-    if (existing.rows.length === 0) {
-      throw new AppError(badgeMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    const dependencies: DependencyGroup[] = []
+    if (result.rows.length > 0) {
+      dependencies.push({ type: 'product', count: result.rows.length, items: result.rows })
     }
 
-    await db.query(`DELETE FROM badges WHERE id = $1`, [id])
+    return { can_delete: dependencies.length === 0, dependencies }
+  },
+
+  // Delete badge with dependency check
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    const result = await db.query(`DELETE FROM badges WHERE id = $1 RETURNING id`, [id])
+    if (result.rows.length === 0) {
+      throw new AppError(badgeMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 }

@@ -9,6 +9,7 @@ import { PERMISSIONS } from '../../../config/permissions.constants'
 import { db } from '../../../lib/db'
 import type { AppEnv } from '../../../types/hono.types'
 import type { StoneShape, StoneShapeListResponse } from '../types/stone-shape.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const stoneShapeRoutes = new Hono<AppEnv>()
 
@@ -56,6 +57,20 @@ stoneShapeRoutes.get('/', authWithPermission(PERMISSIONS.STONE_SHAPE.READ), asyn
   }
 })
 
+// GET /api/stone-shapes/:id/check-dependency - Check dependencies before deletion
+stoneShapeRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.STONE_SHAPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await stoneShapeService.checkDependencies(id)
+    const message = result.can_delete
+      ? stoneShapeMessages.NO_DEPENDENCIES
+      : stoneShapeMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/stone-shapes/:id - Get single stone shape
 stoneShapeRoutes.get('/:id', authWithPermission(PERMISSIONS.STONE_SHAPE.READ), async (c) => {
   try {
@@ -92,4 +107,13 @@ stoneShapeRoutes.put('/:id', authWithPermission(PERMISSIONS.STONE_SHAPE.UPDATE),
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/stone-shapes/:id - Delete stone shape
+stoneShapeRoutes.delete('/:id', authWithPermission(PERMISSIONS.STONE_SHAPE.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await stoneShapeService.delete(id)
+    return successResponse(c, stoneShapeMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

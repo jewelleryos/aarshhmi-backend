@@ -8,6 +8,7 @@ import type {
   UpdateSizeChartGroupRequest,
   SizeChartGroupListResponse,
 } from '../types/size-chart-groups.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const sizeChartGroupService = {
   // List all size chart groups
@@ -75,5 +76,65 @@ export const sizeChartGroupService = {
     )
 
     return this.getById(id)
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    const [products, sizeChartValues] = await Promise.all([
+      // Products referencing this size chart group via JSONB metadata
+      db.query(
+        `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+         FROM products p
+         WHERE p.metadata -> 'sizeChart' ->> 'sizeChartGroupId' = $1
+           AND p.status != 'archived'
+         ORDER BY p.name`,
+        [id]
+      ).then(r => r.rows),
+
+      // Size chart values with this group as parent
+      db.query(
+        `SELECT id, name
+         FROM size_chart_values
+         WHERE size_chart_group_id = $1
+         ORDER BY name`,
+        [id]
+      ).then(r => r.rows),
+    ])
+
+    const dependencies: DependencyGroup[] = []
+
+    if (products.length > 0) {
+      dependencies.push({ type: 'product', count: products.length, items: products })
+    }
+
+    if (sizeChartValues.length > 0) {
+      dependencies.push({ type: 'size_chart_value', count: sizeChartValues.length, items: sizeChartValues })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete size chart group (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    const result = await db.query(
+      `DELETE FROM size_chart_groups WHERE id = $1 RETURNING id`,
+      [id]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(sizeChartGroupMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 }
