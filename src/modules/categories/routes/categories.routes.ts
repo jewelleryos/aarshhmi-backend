@@ -16,6 +16,7 @@ import type {
   CategoryListResponse,
   CategoryFlatListResponse,
 } from '../types/categories.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const categoryRoutes = new Hono<AppEnv>()
 
@@ -73,6 +74,18 @@ categoryRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.U
   }
 })
 
+// GET /api/categories/:id/check-dependency - Check dependencies before delete
+categoryRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.CATEGORY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await categoryService.checkDependencies(id)
+    const message = result.can_delete ? categoryMessages.NO_DEPENDENCIES : categoryMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/categories/:id - Get single category
 categoryRoutes.get('/:id', authWithPermission(PERMISSIONS.CATEGORY.READ), async (c) => {
   try {
@@ -122,4 +135,13 @@ categoryRoutes.put('/:id/seo', authWithPermission(PERMISSIONS.CATEGORY.UPDATE), 
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/categories/:id - Delete category
+categoryRoutes.delete('/:id', authWithPermission(PERMISSIONS.CATEGORY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await categoryService.delete(id)
+    return successResponse(c, categoryMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

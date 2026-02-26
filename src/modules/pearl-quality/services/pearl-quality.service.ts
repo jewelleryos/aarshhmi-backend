@@ -10,6 +10,7 @@ import type {
   UpdatePearlQualityRequest,
   PearlQualityListResponse,
 } from '../types/pearl-quality.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const pearlQualityService = {
   // List all pearl qualities (filtered by PEARLS stone_group_id)
@@ -173,5 +174,58 @@ export const pearlQualityService = {
       [STONE_GROUPS.PEARLS]
     )
     return result.rows
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    // Tag-based query — pearl qualities have system tags linked to products via product_tags
+    const result = await db.query(
+      `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+       FROM products p
+       JOIN product_tags pt ON pt.product_id = p.id
+       JOIN tags t ON t.id = pt.tag_id
+       WHERE t.source_id = $1 AND t.is_system_generated = TRUE
+         AND p.status != 'archived'
+       ORDER BY p.name`,
+      [id]
+    )
+
+    const dependencies: DependencyGroup[] = []
+
+    if (result.rows.length > 0) {
+      dependencies.push({ type: 'product', count: result.rows.length, items: result.rows })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete pearl quality (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    const result = await db.query(
+      `DELETE FROM stone_qualities WHERE id = $1 AND stone_group_id = $2 RETURNING id`,
+      [id, STONE_GROUPS.PEARLS]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(pearlQualityMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 }

@@ -10,6 +10,7 @@ import type {
   UpdatePearlTypeRequest,
   PearlTypeListResponse,
 } from '../types/pearl-type.types'
+import type { DependencyCheckResult, DependencyGroup } from '../../../types/dependency-check.types'
 
 export const pearlTypeService = {
   // List all pearl types (filtered by PEARLS stone_group_id)
@@ -162,6 +163,59 @@ export const pearlTypeService = {
     }
 
     return this.getById(id)
+  },
+
+  // Check dependencies before deletion
+  async checkDependencies(id: string): Promise<DependencyCheckResult> {
+    await this.getById(id)
+
+    // Tag-based query — pearl types have system tags linked to products via product_tags
+    const result = await db.query(
+      `SELECT DISTINCT p.id, p.name, p.base_sku AS sku
+       FROM products p
+       JOIN product_tags pt ON pt.product_id = p.id
+       JOIN tags t ON t.id = pt.tag_id
+       WHERE t.source_id = $1 AND t.is_system_generated = TRUE
+         AND p.status != 'archived'
+       ORDER BY p.name`,
+      [id]
+    )
+
+    const dependencies: DependencyGroup[] = []
+
+    if (result.rows.length > 0) {
+      dependencies.push({ type: 'product', count: result.rows.length, items: result.rows })
+    }
+
+    return {
+      can_delete: dependencies.length === 0,
+      dependencies,
+    }
+  },
+
+  // Delete pearl type (with server-side dependency safety check)
+  async delete(id: string): Promise<void> {
+    const check = await this.checkDependencies(id)
+
+    if (!check.can_delete) {
+      const summary = check.dependencies.map(d => `${d.count} ${d.type}(s)`).join(', ')
+      throw new AppError(`Cannot delete. Used by: ${summary}`, HTTP_STATUS.CONFLICT)
+    }
+
+    // Delete system tag first
+    await db.query(
+      `DELETE FROM tags WHERE source_id = $1 AND is_system_generated = TRUE`,
+      [id]
+    )
+
+    const result = await db.query(
+      `DELETE FROM stone_types WHERE id = $1 AND stone_group_id = $2 RETURNING id`,
+      [id, STONE_GROUPS.PEARLS]
+    )
+
+    if (result.rows.length === 0) {
+      throw new AppError(pearlTypeMessages.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
   },
 
   // Get pearl types for product dropdown (with slug)

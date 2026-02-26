@@ -15,6 +15,7 @@ import { PERMISSIONS } from '../../../config/permissions.constants'
 import { priceRecalculationService } from '../../price-recalculation/services/price-recalculation.service'
 import type { AppEnv } from '../../../types/hono.types'
 import type { GemstonePrice, GemstonePriceListResponse, BulkCreateResult, BulkUpdateResult } from '../types/gemstone-pricing.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const gemstonePricingRoutes = new Hono<AppEnv>()
 
@@ -181,6 +182,20 @@ gemstonePricingRoutes.post('/bulk-update', authWithPermission(PERMISSIONS.GEMSTO
 
 // ============ END BULK OPERATION ROUTES ============
 
+// GET /api/gemstone-prices/:id/check-dependency - Check dependencies before deletion
+gemstonePricingRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.GEMSTONE_PRICING.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await gemstonePricingService.checkDependencies(id)
+    const message = result.can_delete
+      ? gemstonePricingMessages.NO_DEPENDENCIES
+      : gemstonePricingMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/gemstone-prices/:id - Get single gemstone price
 gemstonePricingRoutes.get('/:id', authWithPermission(PERMISSIONS.GEMSTONE_PRICING.READ), async (c) => {
   try {
@@ -219,4 +234,13 @@ gemstonePricingRoutes.put('/:id', authWithPermission(PERMISSIONS.GEMSTONE_PRICIN
   }
 })
 
-// Note: DELETE endpoint intentionally not exposed (pending task)
+// DELETE /api/gemstone-prices/:id - Delete gemstone price
+gemstonePricingRoutes.delete('/:id', authWithPermission(PERMISSIONS.GEMSTONE_PRICING.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await gemstonePricingService.delete(id)
+    return successResponse(c, gemstonePricingMessages.DELETED, null)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})

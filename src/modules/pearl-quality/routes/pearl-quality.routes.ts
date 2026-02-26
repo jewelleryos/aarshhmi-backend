@@ -8,6 +8,7 @@ import { authWithPermission } from '../../../middleware/auth.middleware'
 import { PERMISSIONS } from '../../../config/permissions.constants'
 import type { AppEnv } from '../../../types/hono.types'
 import type { PearlQuality, PearlQualityListResponse } from '../types/pearl-quality.types'
+import type { DependencyCheckResult } from '../../../types/dependency-check.types'
 
 export const pearlQualityRoutes = new Hono<AppEnv>()
 
@@ -38,6 +39,20 @@ pearlQualityRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODU
   try {
     const result = await pearlQualityService.getForProduct()
     return successResponse(c, 'Pearl qualities fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/pearl-qualities/:id/check-dependency - Check dependencies before deletion
+pearlQualityRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.PEARL_QUALITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    const result = await pearlQualityService.checkDependencies(id)
+    const message = result.can_delete
+      ? pearlQualityMessages.NO_DEPENDENCIES
+      : pearlQualityMessages.HAS_DEPENDENCIES
+    return successResponse<DependencyCheckResult>(c, message, result)
   } catch (error) {
     return errorHandler(error, c)
   }
@@ -74,6 +89,17 @@ pearlQualityRoutes.put('/:id', authWithPermission(PERMISSIONS.PEARL_QUALITY.UPDA
     const data = updatePearlQualitySchema.parse(body)
     const result = await pearlQualityService.update(id, data)
     return successResponse<PearlQuality>(c, pearlQualityMessages.UPDATED, result)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /api/pearl-qualities/:id - Delete pearl quality
+pearlQualityRoutes.delete('/:id', authWithPermission(PERMISSIONS.PEARL_QUALITY.DELETE), async (c) => {
+  try {
+    const id = c.req.param('id')
+    await pearlQualityService.delete(id)
+    return successResponse(c, pearlQualityMessages.DELETED, null)
   } catch (error) {
     return errorHandler(error, c)
   }
