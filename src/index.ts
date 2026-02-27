@@ -33,6 +33,7 @@ import { customerAuthRoutes } from './modules/customer-auth/routes/customer-auth
 import { priceRecalculationRoutes } from './modules/price-recalculation/routes/price-recalculation.routes'
 import { storefrontRoutes } from './modules/storefront/routes/storefront.routes'
 import { wishlistRoutes } from './modules/wishlist/routes/wishlist.routes'
+import { storefrontCartRoutes } from './modules/storefront-cart/routes/storefront-cart.routes'
 
 const app = new Hono()
 
@@ -97,7 +98,7 @@ app.route('/api/customer/auth', customerAuthRoutes)
 app.route('/api/storefront', storefrontRoutes)
 app.route('/api/price-recalculation', priceRecalculationRoutes)
 app.route('/api/storefront/wishlist', wishlistRoutes)
-
+app.route('/api/storefront/cart', storefrontCartRoutes)
 
 
 // Server configuration
