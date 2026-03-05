@@ -90,6 +90,26 @@ metalTypeRoutes.get('/for-pricing-rule', authWithPermission(PERMISSIONS.PRICING_
   }
 })
 
+// GET /api/metal-types/for-coupon - Get metal types for coupon condition dropdown
+metalTypeRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await metalTypeService.getForProduct()
+    return successResponse(c, 'Metal types fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/metal-types/for-coupon-edit - Get metal types for coupon edit condition dropdown
+metalTypeRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await metalTypeService.getForProduct()
+    return successResponse(c, 'Metal types fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/metal-types/:id - Get single metal type
 metalTypeRoutes.get('/:id', authWithPermission(PERMISSIONS.METAL_TYPE.READ), async (c) => {
   try {

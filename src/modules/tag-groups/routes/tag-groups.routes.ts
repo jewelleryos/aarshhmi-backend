@@ -49,6 +49,26 @@ tagGroupRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.U
   }
 })
 
+// GET /api/tag-groups/for-coupon - Get tag groups for coupon condition dropdown
+tagGroupRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await tagGroupService.getForProduct()
+    return successResponse(c, 'Tag groups fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/tag-groups/for-coupon-edit - Get tag groups for coupon edit condition dropdown
+tagGroupRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await tagGroupService.getForProduct()
+    return successResponse(c, 'Tag groups fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/tag-groups/:id/check-dependency - Check dependencies before delete
 tagGroupRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.TAG_GROUP.DELETE), async (c) => {
   try {
