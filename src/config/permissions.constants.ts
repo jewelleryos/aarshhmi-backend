@@ -159,4 +159,13 @@ export const PERMISSIONS = {
   PRICE_RECALCULATION: {
     READ: 2901,
   },
+  COUPON: {
+    CREATE: 3001,
+    READ: 3002,
+    UPDATE: 3003,
+    DELETE: 3004,
+  },
+  CUSTOMER: {
+    READ: 3101,
+  },
 } as const

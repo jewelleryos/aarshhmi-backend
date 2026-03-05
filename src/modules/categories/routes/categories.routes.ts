@@ -74,6 +74,26 @@ categoryRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.U
   }
 })
 
+// GET /api/categories/for-coupon - Get categories for coupon condition dropdown
+categoryRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await categoryService.getForProduct()
+    return successResponse(c, 'Categories fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/categories/for-coupon-edit - Get categories for coupon edit condition dropdown
+categoryRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await categoryService.getForProduct()
+    return successResponse(c, 'Categories fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/categories/:id/check-dependency - Check dependencies before delete
 categoryRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.CATEGORY.DELETE), async (c) => {
   try {
