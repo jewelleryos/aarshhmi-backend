@@ -12,8 +12,13 @@ import type {
   CartResponse,
   CartCountResponse,
   CartSummary,
+  CouponSummary,
+  StorefrontCoupon,
   ResolvedCustomer,
 } from '../types/storefront-cart.types'
+import type { CouponRow } from '../../coupons/types/coupons.types'
+import { validateCoupon } from './coupon-validation.service'
+import { calculateDiscount, getProductLevelConditions, type ProductConditionData } from './coupon-calculation.service'
 import type {
   StorefrontVariantPricing,
   PricingMasterData,
@@ -215,10 +220,83 @@ export const storefrontCartService = {
       }
     }
 
+    // ---- Coupon processing ----
+    let discountAmount = 0
+    let couponSummary: CouponSummary | null = null
+    let couponRemovalReason: string | null = null
+
+    // Fetch applied coupon ID from cart
+    const cartRow = await db.query(
+      `SELECT applied_coupon_id FROM carts WHERE id = $1`,
+      [resolvedCartId]
+    )
+    const appliedCouponId = cartRow.rows[0]?.applied_coupon_id || null
+
+    if (appliedCouponId && subtotalPrice > 0) {
+      // Fetch coupon
+      const couponResult = await db.query(
+        `SELECT * FROM coupons WHERE id = $1`,
+        [appliedCouponId]
+      )
+
+      if (couponResult.rows.length === 0) {
+        // Coupon was deleted — auto-remove
+        await db.query(
+          `UPDATE carts SET applied_coupon_id = NULL WHERE id = $1`,
+          [resolvedCartId]
+        )
+        couponRemovalReason = 'The applied coupon is no longer available'
+      } else {
+        const coupon: CouponRow = couponResult.rows[0]
+
+        // Fetch product condition data if coupon has product-level conditions
+        const productConditionData = await this.fetchProductConditionData(coupon, items)
+
+        // Validate coupon against current cart
+        const validation = validateCoupon(
+          coupon, subtotalPrice, availableItemCount, customer,
+          items, productConditionData
+        )
+
+        if (!validation.valid) {
+          // Coupon no longer valid — auto-remove
+          await db.query(
+            `UPDATE carts SET applied_coupon_id = NULL WHERE id = $1`,
+            [resolvedCartId]
+          )
+          couponRemovalReason = validation.error || 'Coupon is no longer valid'
+        } else {
+          // Calculate discount
+          const discountResult = calculateDiscount(coupon, items, subtotalPrice, productConditionData)
+          discountAmount = discountResult.totalDiscount
+
+          // Apply per-item discounts
+          for (const item of items) {
+            item.couponDiscount = discountResult.perItemDiscounts.get(item.id) || 0
+          }
+
+          // Build coupon summary
+          couponSummary = {
+            code: coupon.code,
+            type: coupon.type,
+            discountAmount,
+            displayText: coupon.display_text || `${coupon.code} applied`,
+          }
+        }
+      }
+    } else if (appliedCouponId && subtotalPrice === 0) {
+      // Cart is empty or all items unavailable — remove coupon silently
+      await db.query(
+        `UPDATE carts SET applied_coupon_id = NULL WHERE id = $1`,
+        [resolvedCartId]
+      )
+      couponRemovalReason = 'Coupon removed because cart has no available items'
+    }
+
     const summary: CartSummary = {
       subtotalPrice,
-      discountAmount: 0,
-      totalPrice: subtotalPrice,
+      discountAmount,
+      totalPrice: subtotalPrice - discountAmount,
       totalTaxAmount,
       itemCount,
       availableItemCount,
@@ -229,8 +307,8 @@ export const storefrontCartService = {
       cartId: resolvedCartId,
       items,
       summary,
-      couponSummary: null,
-      couponRemovalReason: null,
+      couponSummary,
+      couponRemovalReason,
     }
   },
 
@@ -607,6 +685,178 @@ export const storefrontCartService = {
     await wishlistService.removeItem(customer, wishlistItemId, wishlistId)
 
     return cartResponse
+  },
+
+  // ============================================
+  // POST /coupon/apply — apply coupon to cart
+  // ============================================
+  async applyCoupon(
+    customer: ResolvedCustomer,
+    code: string,
+    cartId?: string
+  ): Promise<CartResponse> {
+    const resolvedCartId = await this.resolveCartId(customer, cartId)
+    if (!resolvedCartId) {
+      throw new AppError(storefrontCartMessages.EMPTY_CART, HTTP_STATUS.BAD_REQUEST)
+    }
+
+    // Check cart has items
+    const itemCount = await db.query(
+      `SELECT COUNT(*)::int AS count FROM cart_items WHERE cart_id = $1`,
+      [resolvedCartId]
+    )
+    if (itemCount.rows[0].count === 0) {
+      throw new AppError(storefrontCartMessages.EMPTY_CART, HTTP_STATUS.BAD_REQUEST)
+    }
+
+    // Lookup coupon by code (case-insensitive)
+    const couponResult = await db.query(
+      `SELECT * FROM coupons WHERE LOWER(code) = LOWER($1)`,
+      [code]
+    )
+    if (couponResult.rows.length === 0) {
+      throw new AppError(storefrontCartMessages.COUPON_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+
+    const coupon: CouponRow = couponResult.rows[0]
+
+    // Calculate subtotal for validation
+    const cartData = await db.query(
+      `SELECT ci.id AS cart_item_id, ci.product_id, ci.variant_id, ci.quantity,
+              pv.price_components, pv.metadata AS variant_metadata,
+              p.metadata AS product_metadata, pv.price AS variant_price,
+              pv.is_available, p.status AS product_status
+       FROM cart_items ci
+       JOIN products p ON p.id = ci.product_id
+       JOIN product_variants pv ON pv.id = ci.variant_id
+       WHERE ci.cart_id = $1`,
+      [resolvedCartId]
+    )
+
+    let subtotal = 0
+    let availableCount = 0
+    const lightItems: CartItemResponse[] = []
+    for (const row of cartData.rows) {
+      const isAvailable = row.product_status === 'active' && row.is_available
+      const price = row.price_components?.sellingPrice?.finalPrice || row.variant_price || 0
+      const lineTotal = price * row.quantity
+
+      if (isAvailable) {
+        subtotal += lineTotal
+        availableCount += row.quantity
+      }
+
+      // Build lightweight cart item for product-level validation
+      const variantMeta = row.variant_metadata || {}
+      lightItems.push({
+        id: row.cart_item_id,
+        productId: row.product_id,
+        variantId: row.variant_id,
+        quantity: row.quantity,
+        lineTotal,
+        isAvailable,
+        options: {
+          metalType: variantMeta.metalType || null,
+          metalColor: variantMeta.metalColor || null,
+          metalPurity: variantMeta.metalPurity || null,
+          diamondClarityColor: variantMeta.diamondClarityColor || null,
+          gemstoneColor: variantMeta.gemstoneColor || null,
+        },
+      } as CartItemResponse)
+    }
+
+    // Fetch product condition data if coupon has product-level conditions
+    const productConditionData = await this.fetchProductConditionData(coupon, lightItems)
+
+    // Validate coupon
+    const validation = validateCoupon(
+      coupon, subtotal, availableCount, customer,
+      lightItems, productConditionData
+    )
+    if (!validation.valid) {
+      throw new AppError(validation.error || storefrontCartMessages.COUPON_NOT_FOUND, HTTP_STATUS.BAD_REQUEST)
+    }
+
+    // Apply coupon to cart
+    await db.query(
+      `UPDATE carts SET applied_coupon_id = $1 WHERE id = $2`,
+      [coupon.id, resolvedCartId]
+    )
+
+    return this.getCart(customer, resolvedCartId)
+  },
+
+  // ============================================
+  // DELETE /coupon — remove coupon from cart
+  // ============================================
+  async removeCoupon(
+    customer: ResolvedCustomer,
+    cartId?: string
+  ): Promise<CartResponse> {
+    const resolvedCartId = await this.resolveCartId(customer, cartId)
+    if (!resolvedCartId) {
+      throw new AppError(storefrontCartMessages.INVALID_CART, HTTP_STATUS.NOT_FOUND)
+    }
+
+    // Check if a coupon is applied
+    const cart = await db.query(
+      `SELECT applied_coupon_id FROM carts WHERE id = $1`,
+      [resolvedCartId]
+    )
+    if (!cart.rows[0]?.applied_coupon_id) {
+      throw new AppError(storefrontCartMessages.NO_COUPON_APPLIED, HTTP_STATUS.BAD_REQUEST)
+    }
+
+    // Remove coupon
+    await db.query(
+      `UPDATE carts SET applied_coupon_id = NULL WHERE id = $1`,
+      [resolvedCartId]
+    )
+
+    return this.getCart(customer, resolvedCartId)
+  },
+
+  // ============================================
+  // GET /coupons — list available coupons
+  // ============================================
+  async getAvailableCoupons(
+    customer: ResolvedCustomer
+  ): Promise<StorefrontCoupon[]> {
+    const params: any[] = []
+    let guestFilter = ''
+
+    // If no customer (guest), only show guest-allowed coupons
+    if (!customer) {
+      guestFilter = 'AND guest_allowed = true'
+    }
+
+    const result = await db.query(
+      `SELECT code, type, display_text, description,
+              discount_value, discount_percent, max_discount,
+              min_cart_value, valid_until, metadata
+       FROM coupons
+       WHERE is_active = true
+         AND show_on_storefront = true
+         AND (valid_from IS NULL OR valid_from <= NOW())
+         AND (valid_until IS NULL OR valid_until >= NOW())
+         AND (usage_limit IS NULL OR usage_count < usage_limit)
+         ${guestFilter}
+       ORDER BY created_at DESC`,
+      params
+    )
+
+    return result.rows.map((row: any) => ({
+      code: row.code,
+      type: row.type,
+      displayText: row.display_text,
+      description: row.description,
+      discountValue: row.discount_value,
+      discountPercent: row.discount_percent,
+      maxDiscount: row.max_discount,
+      minCartValue: row.min_cart_value,
+      validUntil: row.valid_until,
+      termsAndConditions: row.metadata?.terms_and_conditions || null,
+    }))
   },
 
   // ============================================
@@ -988,5 +1238,55 @@ export const storefrontCartService = {
       if (!matched) return false
     }
     return true
+  },
+
+  /**
+   * Fetch category IDs and tag IDs for cart products (only when coupon has product-level conditions)
+   */
+  async fetchProductConditionData(
+    coupon: CouponRow,
+    items: CartItemResponse[]
+  ): Promise<Map<string, ProductConditionData> | undefined> {
+    const productConditions = getProductLevelConditions(coupon.conditions)
+    const hasProductTargeting =
+      productConditions.length > 0 ||
+      (coupon.applicable_product_ids && coupon.applicable_product_ids.length > 0)
+
+    if (!hasProductTargeting) return undefined
+
+    const productIds = [...new Set(items.filter((i) => i.isAvailable).map((i) => i.productId))]
+    if (productIds.length === 0) return undefined
+
+    const conditionDataMap = new Map<string, ProductConditionData>()
+
+    // Initialize all products
+    for (const pid of productIds) {
+      conditionDataMap.set(pid, { categoryIds: [], tagIds: [] })
+    }
+
+    // Fetch category IDs
+    const catResult = await db.query(
+      `SELECT product_id, category_id FROM product_categories WHERE product_id = ANY($1)`,
+      [productIds]
+    )
+    for (const row of catResult.rows) {
+      const data = conditionDataMap.get(row.product_id)
+      if (data) data.categoryIds.push(row.category_id)
+    }
+
+    // Fetch tag IDs (only active, non-system tags)
+    const tagResult = await db.query(
+      `SELECT pt.product_id, pt.tag_id
+       FROM product_tags pt
+       JOIN tags t ON t.id = pt.tag_id AND t.status = true
+       WHERE pt.product_id = ANY($1)`,
+      [productIds]
+    )
+    for (const row of tagResult.rows) {
+      const data = conditionDataMap.get(row.product_id)
+      if (data) data.tagIds.push(row.tag_id)
+    }
+
+    return conditionDataMap
   },
 }

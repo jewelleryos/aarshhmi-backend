@@ -54,6 +54,26 @@ metalColorRoutes.get('/for-pricing-rule', authWithPermission(PERMISSIONS.PRICING
   }
 })
 
+// GET /api/metal-colors/for-coupon - Get metal colors for coupon condition dropdown
+metalColorRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await metalColorService.getForProduct()
+    return successResponse(c, 'Metal colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/metal-colors/for-coupon-edit - Get metal colors for coupon edit condition dropdown
+metalColorRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await metalColorService.getForProduct()
+    return successResponse(c, 'Metal colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/metal-colors/:id - Get single metal color
 metalColorRoutes.get('/:id', authWithPermission(PERMISSIONS.METAL_COLOR.READ), async (c) => {
   try {

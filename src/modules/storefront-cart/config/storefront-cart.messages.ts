@@ -34,4 +34,12 @@ export const storefrontCartMessages = {
   VARIANT_OUT_OF_STOCK: 'This variant is currently out of stock',
   ALREADY_IN_CART: 'Item is already in cart',
   SAME_SIZE_EXISTS: 'This variant with the selected size is already in your cart',
+
+  // Coupon
+  COUPONS_FETCHED: 'Available coupons fetched',
+  COUPON_APPLIED: 'Coupon applied successfully',
+  COUPON_REMOVED: 'Coupon removed',
+  COUPON_NOT_FOUND: 'Invalid coupon code',
+  NO_COUPON_APPLIED: 'No coupon is currently applied',
+  EMPTY_CART: 'Add items to cart first',
 }

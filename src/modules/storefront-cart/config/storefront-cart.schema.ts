@@ -27,6 +27,11 @@ export const moveToWishlistSchema = z.object({
   wishlist_id: z.string().optional(),
 })
 
+export const applyCouponSchema = z.object({
+  code: z.string().min(1, 'Coupon code is required'),
+  cart_id: z.string().optional(),
+})
+
 export const moveToCartSchema = z.object({
   wishlist_item_id: z.string().min(1, 'wishlist_item_id is required'),
   size_chart_value_id: z.string().optional(),

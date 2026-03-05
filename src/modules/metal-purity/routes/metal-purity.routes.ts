@@ -55,6 +55,26 @@ metalPurityRoutes.get('/for-pricing-rule', authWithPermission(PERMISSIONS.PRICIN
   }
 })
 
+// GET /api/metal-purities/for-coupon - Get metal purities for coupon condition dropdown
+metalPurityRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await metalPurityService.getForProduct()
+    return successResponse(c, 'Metal purities fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/metal-purities/for-coupon-edit - Get metal purities for coupon edit condition dropdown
+metalPurityRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await metalPurityService.getForProduct()
+    return successResponse(c, 'Metal purities fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/metal-purities/:id - Get single metal purity
 metalPurityRoutes.get('/:id', authWithPermission(PERMISSIONS.METAL_PURITY.READ), async (c) => {
   try {

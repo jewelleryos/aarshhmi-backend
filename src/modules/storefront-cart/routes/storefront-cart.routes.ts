@@ -9,6 +9,7 @@ import {
   mergeCartSchema,
   moveToWishlistSchema,
   moveToCartSchema,
+  applyCouponSchema,
 } from '../config/storefront-cart.schema'
 import { successResponse } from '../../../utils/response'
 import { errorHandler } from '../../../utils/error-handler'
@@ -156,6 +157,52 @@ storefrontCartRoutes.post('/move-to-cart', customerAuthOptional(), async (c) => 
     )
 
     return successResponse(c, storefrontCartMessages.MOVED_TO_CART, response)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /coupons — list available coupons for storefront
+storefrontCartRoutes.get('/coupons', customerAuthOptional(), async (c) => {
+  try {
+    const customer = c.get('customer') as AuthCustomer | undefined
+
+    const response = await storefrontCartService.getAvailableCoupons(customer)
+
+    return successResponse(c, storefrontCartMessages.COUPONS_FETCHED, response)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// POST /coupon/apply — apply coupon code to cart
+storefrontCartRoutes.post('/coupon/apply', customerAuthOptional(), async (c) => {
+  try {
+    const customer = c.get('customer') as AuthCustomer | undefined
+    const body = await c.req.json()
+    const data = applyCouponSchema.parse(body)
+
+    const response = await storefrontCartService.applyCoupon(
+      customer,
+      data.code,
+      data.cart_id
+    )
+
+    return successResponse(c, storefrontCartMessages.COUPON_APPLIED, response)
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// DELETE /coupon — remove applied coupon from cart
+storefrontCartRoutes.delete('/coupon', customerAuthOptional(), async (c) => {
+  try {
+    const customer = c.get('customer') as AuthCustomer | undefined
+    const cartId = c.req.query('cart_id')
+
+    const response = await storefrontCartService.removeCoupon(customer, cartId)
+
+    return successResponse(c, storefrontCartMessages.COUPON_REMOVED, response)
   } catch (error) {
     return errorHandler(error, c)
   }

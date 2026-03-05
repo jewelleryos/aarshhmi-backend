@@ -151,6 +151,23 @@ export interface CouponSummary {
 }
 
 // ========================================
+// Available coupon for storefront listing
+// ========================================
+
+export interface StorefrontCoupon {
+  code: string
+  type: string
+  displayText: string | null
+  description: string | null
+  discountValue: number | null
+  discountPercent: number | null
+  maxDiscount: number | null
+  minCartValue: number | null
+  validUntil: string | null
+  termsAndConditions: string | null
+}
+
+// ========================================
 // Full cart response
 // ========================================
 
