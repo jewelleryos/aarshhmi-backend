@@ -64,6 +64,26 @@ diamondClarityColorRoutes.get('/for-pricing-rule', authWithPermission(PERMISSION
   }
 })
 
+// GET /api/diamond-clarity-color/for-coupon - Get diamond clarity colors for coupon condition dropdown
+diamondClarityColorRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await diamondClarityColorService.getForProduct()
+    return successResponse(c, 'Diamond clarity colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/diamond-clarity-color/for-coupon-edit - Get diamond clarity colors for coupon edit condition dropdown
+diamondClarityColorRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await diamondClarityColorService.getForProduct()
+    return successResponse(c, 'Diamond clarity colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/diamond-clarity-color - List all diamond clarity/colors
 diamondClarityColorRoutes.get('/', authWithPermission(PERMISSIONS.DIAMOND_CLARITY_COLOR.READ), async (c) => {
   try {

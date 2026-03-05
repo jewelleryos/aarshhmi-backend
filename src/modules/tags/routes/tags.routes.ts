@@ -63,6 +63,26 @@ tagRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PRODUCT.UPDATE
   }
 })
 
+// GET /api/tags/for-coupon - Get tags for coupon condition dropdown
+tagRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await tagService.getForProduct()
+    return successResponse(c, 'Tags fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/tags/for-coupon-edit - Get tags for coupon edit condition dropdown
+tagRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await tagService.getForProduct()
+    return successResponse(c, 'Tags fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/tags/:id/check-dependency - Check dependencies before delete
 tagRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.TAG.DELETE), async (c) => {
   try {

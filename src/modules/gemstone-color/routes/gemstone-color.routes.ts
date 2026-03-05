@@ -54,6 +54,26 @@ gemstoneColorRoutes.get('/for-product-edit', authWithPermission(PERMISSIONS.PROD
   }
 })
 
+// GET /api/gemstone-colors/for-coupon - Get gemstone colors for coupon condition dropdown
+gemstoneColorRoutes.get('/for-coupon', authWithPermission(PERMISSIONS.COUPON.CREATE), async (c) => {
+  try {
+    const result = await gemstoneColorService.getForProduct()
+    return successResponse(c, 'Gemstone colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
+// GET /api/gemstone-colors/for-coupon-edit - Get gemstone colors for coupon edit condition dropdown
+gemstoneColorRoutes.get('/for-coupon-edit', authWithPermission(PERMISSIONS.COUPON.UPDATE), async (c) => {
+  try {
+    const result = await gemstoneColorService.getForProduct()
+    return successResponse(c, 'Gemstone colors fetched successfully', { items: result })
+  } catch (error) {
+    return errorHandler(error, c)
+  }
+})
+
 // GET /api/gemstone-colors/:id/check-dependency - Check dependencies before deletion
 gemstoneColorRoutes.get('/:id/check-dependency', authWithPermission(PERMISSIONS.GEMSTONE_COLOR.DELETE), async (c) => {
   try {
