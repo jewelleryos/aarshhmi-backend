@@ -5,4 +5,5 @@ export const storefrontMessages = {
   PRODUCT_NOT_FOUND: 'Product not found',
   PRODUCT_DETAIL_IDENTIFIER_REQUIRED: 'Either slug or productSku is required',
   SIMILAR_PRODUCTS_FETCHED: 'Similar products fetched successfully',
+  RECENTLY_VIEWED_FETCHED: 'Recently viewed products fetched successfully',
 }
