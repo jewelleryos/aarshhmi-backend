@@ -254,9 +254,9 @@ export const diamondClarityColorService = {
        SET metadata = jsonb_set(
          metadata,
          '{optionConfig,diamondClarityColors}',
-         (
-           SELECT COALESCE(
-             jsonb_agg(
+         COALESCE(
+           (
+             SELECT jsonb_agg(
                CASE
                  WHEN elem->>'id' = $1
                  THEN jsonb_build_object(
@@ -268,12 +268,12 @@ export const diamondClarityColorService = {
                  )
                  ELSE elem
                END
-             ),
-             metadata->'optionConfig'->'diamondClarityColors'
-           )
-           FROM jsonb_array_elements(metadata->'optionConfig'->'diamondClarityColors') AS elem
-           CROSS JOIN stone_qualities sq
-           WHERE sq.id = $1
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'diamondClarityColors') AS elem
+             CROSS JOIN stone_qualities sq
+             WHERE sq.id = $1
+           ),
+           metadata->'optionConfig'->'diamondClarityColors'
          )
        ),
        updated_at = NOW()

@@ -269,9 +269,9 @@ export const metalPurityService = {
        SET metadata = jsonb_set(
          metadata,
          '{optionConfig,metalPurities}',
-         (
-           SELECT COALESCE(
-             jsonb_agg(
+         COALESCE(
+           (
+             SELECT jsonb_agg(
                CASE
                  WHEN elem->>'id' = $1
                  THEN jsonb_build_object(
@@ -284,12 +284,12 @@ export const metalPurityService = {
                  )
                  ELSE elem
                END
-             ),
-             metadata->'optionConfig'->'metalPurities'
-           )
-           FROM jsonb_array_elements(metadata->'optionConfig'->'metalPurities') AS elem
-           CROSS JOIN metal_purities mp
-           WHERE mp.id = $1
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'metalPurities') AS elem
+             CROSS JOIN metal_purities mp
+             WHERE mp.id = $1
+           ),
+           metadata->'optionConfig'->'metalPurities'
          )
        ),
        updated_at = NOW()

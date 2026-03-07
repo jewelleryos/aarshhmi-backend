@@ -264,9 +264,9 @@ export const gemstoneColorService = {
        SET metadata = jsonb_set(
          metadata,
          '{optionConfig,gemstoneColors}',
-         (
-           SELECT COALESCE(
-             jsonb_agg(
+         COALESCE(
+           (
+             SELECT jsonb_agg(
                CASE
                  WHEN elem->>'id' = $1
                  THEN jsonb_build_object(
@@ -278,12 +278,12 @@ export const gemstoneColorService = {
                  )
                  ELSE elem
                END
-             ),
-             metadata->'optionConfig'->'gemstoneColors'
-           )
-           FROM jsonb_array_elements(metadata->'optionConfig'->'gemstoneColors') AS elem
-           CROSS JOIN stone_colors sc
-           WHERE sc.id = $1
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'gemstoneColors') AS elem
+             CROSS JOIN stone_colors sc
+             WHERE sc.id = $1
+           ),
+           metadata->'optionConfig'->'gemstoneColors'
          )
        ),
        updated_at = NOW()
