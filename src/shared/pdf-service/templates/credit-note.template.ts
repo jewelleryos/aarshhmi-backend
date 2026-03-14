@@ -110,7 +110,7 @@ export const creditNoteTemplate = (params: CreditNoteParams): string => {
   <!-- Header -->
   <div class="header">
     <div>
-      <div class="company-name">Luminique</div>
+      <div class="company-name">Aarshhmi</div>
     </div>
     <div>
       <div class="doc-title">Credit Note</div>
@@ -217,7 +217,7 @@ export const creditNoteTemplate = (params: CreditNoteParams): string => {
 
   <!-- Footer -->
   <div class="footer">
-    <p>&copy; ${new Date().getFullYear()} Luminique. All rights reserved.</p>
+    <p>&copy; ${new Date().getFullYear()} Aarshhmi. All rights reserved.</p>
     <p>This is a computer-generated document and does not require a signature.</p>
   </div>
 </body>

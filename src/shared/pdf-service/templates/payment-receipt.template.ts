@@ -111,7 +111,7 @@ export const paymentReceiptTemplate = (params: PaymentReceiptParams): string => 
     <table style="width: 100%; margin-bottom: 30px;">
       <tr>
         <td style="vertical-align: top;">
-          <h1 style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0; letter-spacing: 1px;">LUMINIQUE</h1>
+          <h1 style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0; letter-spacing: 1px;">AARSHHMI</h1>
           <p style="font-size: 11px; color: #999; margin-top: 2px; letter-spacing: 0.5px;">FINE JEWELLERY</p>
         </td>
         <td style="vertical-align: top; text-align: right;">
@@ -209,7 +209,7 @@ export const paymentReceiptTemplate = (params: PaymentReceiptParams): string => 
     <!-- Footer -->
     <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
       <p style="font-size: 12px; color: #999;">This is a computer-generated payment receipt and does not require a signature.</p>
-      <p style="font-size: 12px; color: #999; margin-top: 4px;">&copy; ${new Date().getFullYear()} Luminique. All rights reserved.</p>
+      <p style="font-size: 12px; color: #999; margin-top: 4px;">&copy; ${new Date().getFullYear()} Aarshhmi. All rights reserved.</p>
     </div>
 
   </div>

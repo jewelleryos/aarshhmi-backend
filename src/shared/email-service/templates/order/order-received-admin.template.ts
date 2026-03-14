@@ -80,7 +80,7 @@ export const orderReceivedAdminTemplate = (params: OrderReceivedAdminParams): st
           <!-- Header -->
           <tr>
             <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid #eaeaea;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Luminique — Admin</h1>
+              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Aarshhmi — Admin</h1>
             </td>
           </tr>
 
@@ -148,7 +148,7 @@ export const orderReceivedAdminTemplate = (params: OrderReceivedAdminParams): st
           <tr>
             <td style="padding: 30px 40px; text-align: center; background-color: #fafafa; border-top: 1px solid #eaeaea; border-radius: 0 0 8px 8px;">
               <p style="margin: 0; font-size: 13px; color: #8a8a8a;">
-                &copy; ${new Date().getFullYear()} Luminique. All rights reserved.
+                &copy; ${new Date().getFullYear()} Aarshhmi. All rights reserved.
               </p>
               <p style="margin: 10px 0 0; font-size: 12px; color: #aaaaaa;">
                 This is an internal notification. Please do not reply to this email.

@@ -39,7 +39,7 @@ export const orderDeliveredCustomerTemplate = (params: OrderDeliveredCustomerPar
           <!-- Header -->
           <tr>
             <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid #eaeaea;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Luminique</h1>
+              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a;">Aarshhmi</h1>
             </td>
           </tr>
 
@@ -85,7 +85,7 @@ export const orderDeliveredCustomerTemplate = (params: OrderDeliveredCustomerPar
               <hr style="margin: 10px 0 20px; border: none; border-top: 1px solid #eaeaea;">
 
               <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #6a6a6a;">
-                Thank you for shopping with Luminique! If you have any questions or concerns about your order, please don't hesitate to reach out.
+                Thank you for shopping with Aarshhmi! If you have any questions or concerns about your order, please don't hesitate to reach out.
               </p>
             </td>
           </tr>
@@ -94,7 +94,7 @@ export const orderDeliveredCustomerTemplate = (params: OrderDeliveredCustomerPar
           <tr>
             <td style="padding: 30px 40px; text-align: center; background-color: #fafafa; border-top: 1px solid #eaeaea; border-radius: 0 0 8px 8px;">
               <p style="margin: 0; font-size: 13px; color: #8a8a8a;">
-                &copy; ${new Date().getFullYear()} Luminique. All rights reserved.
+                &copy; ${new Date().getFullYear()} Aarshhmi. All rights reserved.
               </p>
               <p style="margin: 10px 0 0; font-size: 12px; color: #aaaaaa;">
                 This is an automated message. Please do not reply to this email.
