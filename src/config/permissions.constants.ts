@@ -184,4 +184,8 @@ export const PERMISSIONS = {
     DELETE: 3405,
     USER_DELETE: 3406,
   },
+  ORDER: {
+    READ: 3501,
+    UPDATE: 3502,
+  },
 } as const

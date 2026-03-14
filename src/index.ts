@@ -40,6 +40,9 @@ import { similarProductsRoutes } from './modules/similar-products/routes/similar
 import { similarProductsDeveloperRoutes } from './modules/similar-products/routes/similar-products-developer.routes'
 import { productReviewRoutes } from './modules/product-review/routes/product-review.routes'
 import { storefrontReviewRoutes } from './modules/product-review/routes/storefront-review.routes'
+import { storefrontCustomerRoutes } from './modules/storefront-customer/routes/storefront-customer.routes'
+import { storefrontOrderRoutes } from './modules/storefront-order/routes/storefront-order.routes'
+import { orderRoutes } from './modules/order/routes/order.routes'
 
 const app = new Hono()
 
@@ -111,6 +114,9 @@ app.route('/api/similar-products', similarProductsDeveloperRoutes)
 app.route('/api/similar-products', similarProductsRoutes)
 app.route('/api/product-reviews', productReviewRoutes)
 app.route('/api/storefront/reviews', storefrontReviewRoutes)
+app.route('/api/storefront/customer', storefrontCustomerRoutes)
+app.route('/api/storefront/orders', storefrontOrderRoutes)
+app.route('/api/orders', orderRoutes)
 
 
 // Server configuration

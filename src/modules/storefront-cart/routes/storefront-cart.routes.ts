@@ -44,6 +44,7 @@ storefrontCartRoutes.post('/items', customerAuthOptional(), async (c) => {
       data.product_id,
       data.variant_id,
       data.size_chart_value_id,
+      data.engraving_text,
       data.quantity,
       data.cart_id
     )
