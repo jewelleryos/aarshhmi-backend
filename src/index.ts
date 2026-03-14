@@ -36,6 +36,13 @@ import { wishlistRoutes } from './modules/wishlist/routes/wishlist.routes'
 import { storefrontCartRoutes } from './modules/storefront-cart/routes/storefront-cart.routes'
 import { couponRoutes } from './modules/coupons/routes/coupons.routes'
 import { customerRoutes } from './modules/customers/routes/customers.routes'
+import { similarProductsRoutes } from './modules/similar-products/routes/similar-products.routes'
+import { similarProductsDeveloperRoutes } from './modules/similar-products/routes/similar-products-developer.routes'
+import { productReviewRoutes } from './modules/product-review/routes/product-review.routes'
+import { storefrontReviewRoutes } from './modules/product-review/routes/storefront-review.routes'
+import { storefrontCustomerRoutes } from './modules/storefront-customer/routes/storefront-customer.routes'
+import { storefrontOrderRoutes } from './modules/storefront-order/routes/storefront-order.routes'
+import { orderRoutes } from './modules/order/routes/order.routes'
 
 const app = new Hono()
 
@@ -103,6 +110,13 @@ app.route('/api/storefront/wishlist', wishlistRoutes)
 app.route('/api/storefront/cart', storefrontCartRoutes)
 app.route('/api/coupons', couponRoutes)
 app.route('/api/customers', customerRoutes)
+app.route('/api/similar-products', similarProductsDeveloperRoutes)
+app.route('/api/similar-products', similarProductsRoutes)
+app.route('/api/product-reviews', productReviewRoutes)
+app.route('/api/storefront/reviews', storefrontReviewRoutes)
+app.route('/api/storefront/customer', storefrontCustomerRoutes)
+app.route('/api/storefront/orders', storefrontOrderRoutes)
+app.route('/api/orders', orderRoutes)
 
 
 // Server configuration

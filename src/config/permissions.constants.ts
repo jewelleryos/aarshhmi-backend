@@ -168,4 +168,24 @@ export const PERMISSIONS = {
   CUSTOMER: {
     READ: 3101,
   },
+  SIMILAR_PRODUCTS: {
+    READ: 3201,
+    UPDATE: 3202,
+  },
+  SIMILAR_PRODUCTS_INTERNAL: {
+    READ: 3301,
+    MANAGE: 3302,
+  },
+  PRODUCT_REVIEW: {
+    READ: 3401,
+    CREATE: 3402,
+    UPDATE: 3403,
+    USER_STATUS_UPDATE: 3404,
+    DELETE: 3405,
+    USER_DELETE: 3406,
+  },
+  ORDER: {
+    READ: 3501,
+    UPDATE: 3502,
+  },
 } as const

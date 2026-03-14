@@ -168,6 +168,19 @@ export const gemstoneColorService = {
       )
     }
 
+    // Async sync product metadata if display fields changed
+    const displayFieldChanged =
+      data.name !== undefined ||
+      data.slug !== undefined ||
+      data.image_url !== undefined ||
+      data.image_alt_text !== undefined
+
+    if (displayFieldChanged) {
+      this.syncProductOptionConfig(id).catch((err) =>
+        console.error(`[GemstoneColor] Failed to sync optionConfig for gemstone color ${id}:`, err)
+      )
+    }
+
     return this.getById(id)
   },
 
@@ -242,5 +255,45 @@ export const gemstoneColorService = {
       [STONE_GROUPS.GEMSTONE]
     )
     return result.rows
+  },
+
+  // Sync optionConfig.gemstoneColors in all products that use this gemstone color
+  async syncProductOptionConfig(gemstoneColorId: string): Promise<void> {
+    const result = await db.query(
+      `UPDATE products
+       SET metadata = jsonb_set(
+         metadata,
+         '{optionConfig,gemstoneColors}',
+         COALESCE(
+           (
+             SELECT jsonb_agg(
+               CASE
+                 WHEN elem->>'id' = $1
+                 THEN jsonb_build_object(
+                   'id', sc.id,
+                   'name', sc.name,
+                   'slug', sc.slug,
+                   'imageUrl', sc.image_url,
+                   'imageAltText', sc.image_alt_text
+                 )
+                 ELSE elem
+               END
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'gemstoneColors') AS elem
+             CROSS JOIN stone_colors sc
+             WHERE sc.id = $1
+           ),
+           metadata->'optionConfig'->'gemstoneColors'
+         )
+       ),
+       updated_at = NOW()
+       WHERE metadata->'optionConfig'->'gemstoneColors' @> $2::jsonb
+         AND EXISTS (SELECT 1 FROM stone_colors WHERE id = $1)`,
+      [gemstoneColorId, JSON.stringify([{ id: gemstoneColorId }])]
+    )
+
+    if (result.rowCount && result.rowCount > 0) {
+      console.log(`[GemstoneColor] Synced optionConfig for ${result.rowCount} product(s) using gemstone color ${gemstoneColorId}`)
+    }
   },
 }

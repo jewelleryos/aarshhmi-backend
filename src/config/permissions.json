@@ -285,6 +285,15 @@
       "permissions": {
         "read": { "code": 3101, "label": "View Customers", "requires": [], "internal": false }
       }
+    },
+    "order": {
+      "id": 35,
+      "label": "Orders",
+      "group": "Order Management",
+      "permissions": {
+        "read": { "code": 3501, "label": "View Orders", "requires": [], "internal": false },
+        "update": { "code": 3502, "label": "Update Order", "requires": [3501], "internal": false }
+      }
     }
   },
   "byCode": {
@@ -393,6 +402,8 @@
     "3002": { "module": "coupon", "action": "read", "label": "View Coupons", "internal": false },
     "3003": { "module": "coupon", "action": "update", "label": "Update Coupon", "internal": false },
     "3004": { "module": "coupon", "action": "delete", "label": "Delete Coupon", "internal": false },
-    "3101": { "module": "customer", "action": "read", "label": "View Customers", "internal": false }
+    "3101": { "module": "customer", "action": "read", "label": "View Customers", "internal": false },
+    "3501": { "module": "order", "action": "read", "label": "View Orders", "internal": false },
+    "3502": { "module": "order", "action": "update", "label": "Update Order", "internal": false }
   }
 }

@@ -154,6 +154,19 @@ export const metalColorService = {
       )
     }
 
+    // Async sync product metadata if display fields changed
+    const displayFieldChanged =
+      data.name !== undefined ||
+      data.slug !== undefined ||
+      data.image_url !== undefined ||
+      data.image_alt_text !== undefined
+
+    if (displayFieldChanged) {
+      this.syncProductOptionConfig(id).catch((err) =>
+        console.error(`[MetalColor] Failed to sync optionConfig for metal color ${id}:`, err)
+      )
+    }
+
     return this.getById(id)
   },
 
@@ -217,5 +230,47 @@ export const metalColorService = {
       `SELECT id, name FROM metal_colors WHERE status = true ORDER BY name ASC`
     )
     return result.rows
+  },
+
+  // Sync optionConfig.metalColors in all products that use this metal color
+  // Uses a single SQL query to update all affected products at once
+  // Only touches metadata.optionConfig.metalColors — all other metadata fields are untouched
+  async syncProductOptionConfig(metalColorId: string): Promise<void> {
+    const result = await db.query(
+      `UPDATE products
+       SET metadata = jsonb_set(
+         metadata,
+         '{optionConfig,metalColors}',
+         COALESCE(
+           (
+             SELECT jsonb_agg(
+               CASE
+                 WHEN elem->>'id' = $1
+                 THEN jsonb_build_object(
+                   'id', mc.id,
+                   'name', mc.name,
+                   'slug', mc.slug,
+                   'imageUrl', mc.image_url,
+                   'imageAltText', mc.image_alt_text
+                 )
+                 ELSE elem
+               END
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'metalColors') AS elem
+             CROSS JOIN metal_colors mc
+             WHERE mc.id = $1
+           ),
+           metadata->'optionConfig'->'metalColors'
+         )
+       ),
+       updated_at = NOW()
+       WHERE metadata->'optionConfig'->'metalColors' @> $2::jsonb
+         AND EXISTS (SELECT 1 FROM metal_colors WHERE id = $1)`,
+      [metalColorId, JSON.stringify([{ id: metalColorId }])]
+    )
+
+    if (result.rowCount && result.rowCount > 0) {
+      console.log(`[MetalColor] Synced optionConfig for ${result.rowCount} product(s) using metal color ${metalColorId}`)
+    }
   },
 }

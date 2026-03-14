@@ -59,6 +59,7 @@ export const storefrontCartService = {
         ci.size_chart_value_id, ci.added_price, ci.metadata AS item_metadata,
         ci.created_at,
         p.name AS product_name, p.slug AS product_slug,
+        p.base_sku AS product_sku,
         p.status AS product_status, p.metadata AS product_metadata,
         pv.variant_name, pv.sku, pv.price AS variant_price,
         pv.compare_at_price, pv.price_components,
@@ -179,6 +180,7 @@ export const storefrontCartService = {
         variantId: row.variant_id,
         productName: row.product_name,
         productSlug: row.product_slug,
+        productSku: row.product_sku || null,
         variantName: row.variant_name || null,
         sku: row.sku,
         quantity: row.quantity,
@@ -204,6 +206,7 @@ export const storefrontCartService = {
           sizeChartGroupId: hasSizeChart ? (productMeta.sizeChart?.sizeChartGroupId || null) : null,
           values: sizeChartValues,
         },
+        engravingText: row.item_metadata?.engravingText || null,
         isAvailable,
         unavailableReason,
       }
@@ -320,6 +323,7 @@ export const storefrontCartService = {
     productId: string,
     variantId: string,
     sizeChartValueId?: string,
+    engravingText?: string,
     quantity: number = 1,
     cartId?: string
   ): Promise<CartResponse> {
@@ -394,10 +398,11 @@ export const storefrontCartService = {
       // Snapshot added_price
       const addedPrice = await this.getAddedPrice(variantMeta, productMeta, variant.price, hasSizeChart, resolvedSizeChartValueId)
 
+      const itemMetadata = engravingText ? { engravingText } : {}
       await db.query(
-        `INSERT INTO cart_items (cart_id, product_id, variant_id, quantity, size_chart_value_id, added_price)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [resolvedCartId, productId, variantId, quantity, resolvedSizeChartValueId, addedPrice]
+        `INSERT INTO cart_items (cart_id, product_id, variant_id, quantity, size_chart_value_id, added_price, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [resolvedCartId, productId, variantId, quantity, resolvedSizeChartValueId, addedPrice, JSON.stringify(itemMetadata)]
       )
     }
 
@@ -677,6 +682,7 @@ export const storefrontCartService = {
       wItem.product_id,
       wItem.variant_id,
       sizeChartValueId,
+      undefined,
       1,
       cartId
     )
