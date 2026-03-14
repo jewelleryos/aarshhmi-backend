@@ -183,6 +183,19 @@ export const metalPurityService = {
       )
     }
 
+    // Async sync product metadata if display fields changed
+    const displayFieldChanged =
+      data.name !== undefined ||
+      data.slug !== undefined ||
+      data.image_url !== undefined ||
+      data.image_alt_text !== undefined
+
+    if (displayFieldChanged) {
+      this.syncProductOptionConfig(id).catch((err) =>
+        console.error(`[MetalPurity] Failed to sync optionConfig for metal purity ${id}:`, err)
+      )
+    }
+
     // Fetch with metal type name
     return this.getById(id)
   },
@@ -247,5 +260,46 @@ export const metalPurityService = {
       `SELECT id, name FROM metal_purities WHERE status = true ORDER BY name ASC`
     )
     return result.rows
+  },
+
+  // Sync optionConfig.metalPurities in all products that use this metal purity
+  async syncProductOptionConfig(metalPurityId: string): Promise<void> {
+    const result = await db.query(
+      `UPDATE products
+       SET metadata = jsonb_set(
+         metadata,
+         '{optionConfig,metalPurities}',
+         COALESCE(
+           (
+             SELECT jsonb_agg(
+               CASE
+                 WHEN elem->>'id' = $1
+                 THEN jsonb_build_object(
+                   'id', mp.id,
+                   'name', mp.name,
+                   'slug', mp.slug,
+                   'metalTypeId', mp.metal_type_id,
+                   'imageUrl', mp.image_url,
+                   'imageAltText', mp.image_alt_text
+                 )
+                 ELSE elem
+               END
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'metalPurities') AS elem
+             CROSS JOIN metal_purities mp
+             WHERE mp.id = $1
+           ),
+           metadata->'optionConfig'->'metalPurities'
+         )
+       ),
+       updated_at = NOW()
+       WHERE metadata->'optionConfig'->'metalPurities' @> $2::jsonb
+         AND EXISTS (SELECT 1 FROM metal_purities WHERE id = $1)`,
+      [metalPurityId, JSON.stringify([{ id: metalPurityId }])]
+    )
+
+    if (result.rowCount && result.rowCount > 0) {
+      console.log(`[MetalPurity] Synced optionConfig for ${result.rowCount} product(s) using metal purity ${metalPurityId}`)
+    }
   },
 }

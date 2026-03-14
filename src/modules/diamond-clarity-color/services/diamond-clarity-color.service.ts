@@ -160,6 +160,19 @@ export const diamondClarityColorService = {
       )
     }
 
+    // Async sync product metadata if display fields changed
+    const displayFieldChanged =
+      data.name !== undefined ||
+      data.slug !== undefined ||
+      data.image_url !== undefined ||
+      data.image_alt_text !== undefined
+
+    if (displayFieldChanged) {
+      this.syncProductOptionConfig(id).catch((err) =>
+        console.error(`[DiamondClarityColor] Failed to sync optionConfig for diamond clarity color ${id}:`, err)
+      )
+    }
+
     return this.getById(id)
   },
 
@@ -232,5 +245,45 @@ export const diamondClarityColorService = {
       [STONE_GROUPS.DIAMOND]
     )
     return result.rows
+  },
+
+  // Sync optionConfig.diamondClarityColors in all products that use this diamond clarity color
+  async syncProductOptionConfig(diamondClarityColorId: string): Promise<void> {
+    const result = await db.query(
+      `UPDATE products
+       SET metadata = jsonb_set(
+         metadata,
+         '{optionConfig,diamondClarityColors}',
+         COALESCE(
+           (
+             SELECT jsonb_agg(
+               CASE
+                 WHEN elem->>'id' = $1
+                 THEN jsonb_build_object(
+                   'id', sq.id,
+                   'name', sq.name,
+                   'slug', sq.slug,
+                   'imageUrl', sq.image_url,
+                   'imageAltText', sq.image_alt_text
+                 )
+                 ELSE elem
+               END
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'diamondClarityColors') AS elem
+             CROSS JOIN stone_qualities sq
+             WHERE sq.id = $1
+           ),
+           metadata->'optionConfig'->'diamondClarityColors'
+         )
+       ),
+       updated_at = NOW()
+       WHERE metadata->'optionConfig'->'diamondClarityColors' @> $2::jsonb
+         AND EXISTS (SELECT 1 FROM stone_qualities WHERE id = $1)`,
+      [diamondClarityColorId, JSON.stringify([{ id: diamondClarityColorId }])]
+    )
+
+    if (result.rowCount && result.rowCount > 0) {
+      console.log(`[DiamondClarityColor] Synced optionConfig for ${result.rowCount} product(s) using diamond clarity color ${diamondClarityColorId}`)
+    }
   },
 }
