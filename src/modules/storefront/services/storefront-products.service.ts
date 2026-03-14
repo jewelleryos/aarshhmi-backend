@@ -139,9 +139,12 @@ class StorefrontProductsService {
           FROM product_badges pb
           JOIN badges b ON b.id = pb.badge_id AND b.status = TRUE
           WHERE pb.product_id = p.id
-        ) AS badges
+        ) AS badges,
+
+        prs.average_rating AS avg_rating
 
       FROM products p
+      LEFT JOIN product_review_stats prs ON prs.product_id = p.id
       WHERE ${whereClause}
       ORDER BY ${orderBy}
       LIMIT ${limitParam} OFFSET ${offsetParam}
@@ -169,6 +172,7 @@ class StorefrontProductsService {
       variants: this.transformVariants(row.variants),
       media: row.media || null,
       badges: row.badges || [],
+      productReview: row.avg_rating ? { avgRating: Number(row.avg_rating) } : null,
       created_at: row.created_at,
     }))
 
@@ -285,7 +289,40 @@ class StorefrontProductsService {
           FROM size_chart_values scv
           WHERE scv.size_chart_group_id = (p.metadata -> 'sizeChart' ->> 'sizeChartGroupId')
             AND (p.metadata -> 'sizeChart' ->> 'hasSizeChart')::boolean = true
-        ) AS size_chart_values
+        ) AS size_chart_values,
+
+        -- Review stats
+        (
+          SELECT json_build_object(
+            'average_rating', prs.average_rating,
+            'total_reviews', prs.total_reviews,
+            'rating_1', prs.rating_1,
+            'rating_2', prs.rating_2,
+            'rating_3', prs.rating_3,
+            'rating_4', prs.rating_4,
+            'rating_5', prs.rating_5
+          )
+          FROM product_review_stats prs
+          WHERE prs.product_id = p.id
+        ) AS review_stats,
+
+        -- Reviews (approved + active only)
+        (
+          SELECT COALESCE(json_agg(
+            json_build_object(
+              'id', prv.id,
+              'customer_name', prv.customer_name,
+              'customer_image_path', prv.customer_image_path,
+              'title', prv.title,
+              'rating', prv.rating,
+              'description', prv.description,
+              'review_date', prv.review_date,
+              'media', prv.media
+            ) ORDER BY prv.review_date DESC
+          ), '[]'::json)
+          FROM product_reviews prv
+          WHERE prv.product_id = p.id AND prv.status = true AND prv.approval_status = 'approved'
+        ) AS reviews
 
       FROM products p
       WHERE ${lookupCondition}
@@ -410,10 +447,36 @@ class StorefrontProductsService {
       }
     }
 
-    // 6. Transform SEO
+    // 6. Transform review data (already fetched in main query)
+    const reviewStats = product.review_stats || null
+    const totalReviews = reviewStats ? Number(reviewStats.total_reviews) : 0
+
+    const productReview = totalReviews > 0
+      ? {
+          avgRating: Number(reviewStats.average_rating),
+          totalReviews,
+          rating1: Number(reviewStats.rating_1),
+          rating2: Number(reviewStats.rating_2),
+          rating3: Number(reviewStats.rating_3),
+          rating4: Number(reviewStats.rating_4),
+          rating5: Number(reviewStats.rating_5),
+          reviews: (product.reviews || []).map((r: any) => ({
+            id: r.id,
+            customerName: r.customer_name,
+            customerImagePath: r.customer_image_path,
+            title: r.title,
+            rating: r.rating,
+            description: r.description,
+            reviewDate: r.review_date,
+            media: r.media || [],
+          })),
+        }
+      : null
+
+    // 7. Transform SEO
     const seo = this.transformSeo(product.seo)
 
-    // 7. Transform variant configs
+    // 8. Transform variant configs
     const variantConfigs: StorefrontVariantConfig[] = (product.variant_configs || []).map((vc: any) => ({
       id: vc.id,
       sku: vc.sku,
@@ -426,7 +489,7 @@ class StorefrontProductsService {
       gemstoneColorId: vc.gemstoneColorId || null,
     }))
 
-    // 8. Build response
+    // 9. Build response
     return {
       id: product.id,
       name: product.name,
@@ -454,6 +517,7 @@ class StorefrontProductsService {
       tags: product.tags || [],
       seo,
       variant,
+      productReview,
     }
   }
 

@@ -156,6 +156,19 @@ export const metalTypeService = {
       )
     }
 
+    // Async sync product metadata if display fields changed
+    const displayFieldChanged =
+      data.name !== undefined ||
+      data.slug !== undefined ||
+      data.image_url !== undefined ||
+      data.image_alt_text !== undefined
+
+    if (displayFieldChanged) {
+      this.syncProductOptionConfig(id).catch((err) =>
+        console.error(`[MetalType] Failed to sync optionConfig for metal type ${id}:`, err)
+      )
+    }
+
     return metalType
   },
 
@@ -257,5 +270,45 @@ export const metalTypeService = {
       `SELECT id, name, slug FROM metal_types WHERE status = true ORDER BY name`
     )
     return result.rows
+  },
+
+  // Sync optionConfig.metalTypes in all products that use this metal type
+  async syncProductOptionConfig(metalTypeId: string): Promise<void> {
+    const result = await db.query(
+      `UPDATE products
+       SET metadata = jsonb_set(
+         metadata,
+         '{optionConfig,metalTypes}',
+         COALESCE(
+           (
+             SELECT jsonb_agg(
+               CASE
+                 WHEN elem->>'id' = $1
+                 THEN jsonb_build_object(
+                   'id', mt.id,
+                   'name', mt.name,
+                   'slug', mt.slug,
+                   'imageUrl', mt.image_url,
+                   'imageAltText', mt.image_alt_text
+                 )
+                 ELSE elem
+               END
+             )
+             FROM jsonb_array_elements(metadata->'optionConfig'->'metalTypes') AS elem
+             CROSS JOIN metal_types mt
+             WHERE mt.id = $1
+           ),
+           metadata->'optionConfig'->'metalTypes'
+         )
+       ),
+       updated_at = NOW()
+       WHERE metadata->'optionConfig'->'metalTypes' @> $2::jsonb
+         AND EXISTS (SELECT 1 FROM metal_types WHERE id = $1)`,
+      [metalTypeId, JSON.stringify([{ id: metalTypeId }])]
+    )
+
+    if (result.rowCount && result.rowCount > 0) {
+      console.log(`[MetalType] Synced optionConfig for ${result.rowCount} product(s) using metal type ${metalTypeId}`)
+    }
   },
 }

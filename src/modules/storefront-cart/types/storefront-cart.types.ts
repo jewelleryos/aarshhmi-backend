@@ -76,6 +76,7 @@ export interface CartItemResponse {
   variantId: string
   productName: string
   productSlug: string
+  productSku: string | null
   variantName: string | null
   sku: string
   quantity: number
@@ -119,6 +120,9 @@ export interface CartItemResponse {
       isDefault: boolean
     }> | null
   }
+
+  // Engraving
+  engravingText: string | null
 
   // Availability
   isAvailable: boolean

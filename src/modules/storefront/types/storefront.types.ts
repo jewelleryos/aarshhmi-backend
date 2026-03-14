@@ -105,6 +105,11 @@ export interface StorefrontProductBadge {
   position: number
 }
 
+// Product review in product card
+export interface StorefrontProductReview {
+  avgRating: number
+}
+
 // Product card in response
 export interface StorefrontProductCard {
   id: string
@@ -117,6 +122,7 @@ export interface StorefrontProductCard {
   variants: StorefrontProductVariant[]
   media: Record<string, unknown> | null
   badges: StorefrontProductBadge[]
+  productReview: StorefrontProductReview | null
   created_at: string
 }
 
@@ -326,6 +332,30 @@ export interface PricingMasterData {
   pricingRules: { id: string; name: string; conditions: any[]; actions: any; product_type: string }[]
 }
 
+// Review item in product detail (no type field exposed)
+export interface StorefrontDetailReviewItem {
+  id: string
+  customerName: string
+  customerImagePath: string | null
+  title: string
+  rating: number
+  description: string
+  reviewDate: string
+  media: { id: string; type: 'image' | 'video'; path: string; alt_text: string | null }[]
+}
+
+// Review stats + reviews for product detail
+export interface StorefrontProductDetailReview {
+  avgRating: number
+  totalReviews: number
+  rating1: number
+  rating2: number
+  rating3: number
+  rating4: number
+  rating5: number
+  reviews: StorefrontDetailReviewItem[]
+}
+
 // Full product detail response
 export interface StorefrontProductDetail {
   id: string
@@ -350,4 +380,5 @@ export interface StorefrontProductDetail {
   tags: StorefrontDetailTag[]
   seo: StorefrontDetailSeo
   variant: StorefrontDetailVariant
+  productReview: StorefrontProductDetailReview | null
 }
